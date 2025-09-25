@@ -1,0 +1,139 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Q&A Platform Design System - All colors, gradients, fonts, etc defined here */
+
+@layer base {
+  :root {
+    /* Base Colors - Professional Theme */
+    --background: 0 0% 99%;
+    --foreground: 215 25% 27%;
+    --card: 0 0% 100%;
+    --card-foreground: 215 25% 27%;
+    --card-hover: 210 40% 98%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 25% 27%;
+
+    /* Primary Colors - Professional Blue */
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary Colors - Neutral Gray */
+    --secondary: 215 16% 94%;
+    --secondary-foreground: 215 25% 27%;
+
+    /* Muted Colors */
+    --muted: 215 16% 94%;
+    --muted-foreground: 215 13% 65%;
+
+    /* Accent Colors */
+    --accent: 215 16% 94%;
+    --accent-foreground: 215 25% 27%;
+
+    /* Destructive Colors */
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Success Colors */
+    --success: 142 69% 58%;
+    --success-foreground: 0 0% 100%;
+
+    /* Warning Colors */
+    --warning: 38 92% 50%;
+    --warning-foreground: 215 25% 27%;
+
+    --border: 215 16% 89%;
+    --input: 215 16% 89%;
+    --ring: 217 91% 60%;
+
+    /* Professional Category Colors */
+    --category-technical: 217 91% 60%;
+    --category-behavioral: 142 69% 58%;
+    --category-system-design: 262 83% 58%;
+    --category-coding: 38 92% 50%;
+    --category-case-study: 332 64% 52%;
+    
+    /* Difficulty Colors */
+    --difficulty-easy: 142 69% 58%;
+    --difficulty-medium: 38 92% 50%;
+    --difficulty-hard: 0 72% 51%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(217 91% 60%), hsl(217 91% 55%));
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(220 14% 98%));
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 hsl(220 43% 11% / 0.05);
+    --shadow-card: 0 4px 6px -1px hsl(220 43% 11% / 0.1), 0 2px 4px -1px hsl(220 43% 11% / 0.06);
+    --shadow-hover: 0 10px 15px -3px hsl(220 43% 11% / 0.1), 0 4px 6px -2px hsl(220 43% 11% / 0.05);
+
+    /* Animations */
+    --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 226 29% 18%;
+    --foreground: 248 250 252;
+
+    --card: 226 29% 20%;
+    --card-foreground: 248 250 252;
+    --card-hover: 226 29% 22%;
+
+    --popover: 226 29% 20%;
+    --popover-foreground: 248 250 252;
+
+    --primary: 217 91% 60%;
+    --primary-hover: 217 91% 55%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 226 29% 22%;
+    --secondary-foreground: 248 250 252;
+    --secondary-hover: 226 29% 25%;
+
+    --muted: 226 29% 22%;
+    --muted-foreground: 220 9% 70%;
+
+    --accent: 217 91% 60%;
+    --accent-foreground: 0 0% 100%;
+    --accent-hover: 217 91% 55%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 226 29% 22%;
+    --input: 226 29% 22%;
+    --ring: 217 91% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    transition: var(--transition-smooth);
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/30 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/50;
+  }
+}
