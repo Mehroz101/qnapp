@@ -3,11 +3,11 @@ import { categoryColors } from '../data/interviewQuestions';
 import { Button } from './ui/button';
 
 interface TagFilterProps {
-  selectedTags: string[];
-  availableTags: string[];
-  onTagToggle: (tag: string) => void;
-  onClearAll: () => void;
-  title?: string;
+  readonly selectedTags: readonly string[];
+  readonly availableTags: readonly string[];
+  readonly onTagToggle: (tag: string) => void;
+  readonly onClearAll: () => void;
+  readonly title?: string;
 }
 
 export function TagFilter({ selectedTags, availableTags, onTagToggle, onClearAll, title = "Filter by Categories" }: TagFilterProps) {

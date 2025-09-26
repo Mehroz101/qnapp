@@ -3,10 +3,9 @@ import type { Express, Request, Response } from 'express';
 import { env } from '../config/env';
 import mockAuthRoutes from './mock/auth';
 import mockQnaRoutes from './mock/qna';
-import realAuthRoutes from './auth';
-import realQnaRoutes from './qna';
+import realAuthRoutes from './authRoutes';
+import realQnaRoutes from './qnaRoutes';
 
-export function registerRoutes(app: Express) {
   const api = Router();
 
   api.get('/health', (_req: Request, res: Response) => {
@@ -21,7 +20,5 @@ export function registerRoutes(app: Express) {
     api.use('/qna', realQnaRoutes);
   }
 
-  app.use('/api', api);
-}
 
 
