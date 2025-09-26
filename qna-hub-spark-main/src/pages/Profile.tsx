@@ -29,7 +29,7 @@ export default function Profile() {
     }
     fetchQuestions();
   }, []);
-
+console.log(user)
   if (loadingUser) return <div className="p-8 text-center">Loading profile...</div>;
   if (!user) return <div className="p-8 text-center">Not logged in.</div>;
 

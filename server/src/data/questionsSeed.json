@@ -1,0 +1,15 @@
+[
+  {
+    "question": "Explain the difference between let, const, and var in JavaScript.",
+    "answer": "var is function-scoped and can be redeclared. let is block-scoped and can be reassigned but not redeclared. const is block-scoped and cannot be reassigned or redeclared after declaration. const must be initialized at declaration time.",
+    "company": "Google",
+    "interviewType": "technical",
+    "category": "JavaScript",
+    "difficulty": "medium",
+    "author": "6514e2f1c8b4f2a1a1a1a1a1",
+    "timestamp": "2025-09-27T10:00:00.000Z",
+    "votes": 15,
+    "bookmarked": false,
+    "views": 342
+  }
+]

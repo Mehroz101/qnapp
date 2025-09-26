@@ -8,12 +8,16 @@ export interface IAnswer {
 
 export interface IQuestion extends Document {
   author: mongoose.Types.ObjectId;
-  title: string;
-  description: string;
-  tags: string[];
-  answers: IAnswer[];
-  upvotes: number;
-  downvotes: number;
+  question: string;
+  answer: string;
+  company: string;
+  interviewType: 'technical' | 'behavioral' | 'system-design' | 'coding' | 'case-study';
+  category: string;
+  difficulty: 'easy' | 'medium' | 'hard';
+  views: number;
+  bookmarked: boolean;
+  timestamp: Date;
+  votes: number;
 }
 
 const AnswerSchema = new Schema<IAnswer>({
@@ -24,14 +28,18 @@ const AnswerSchema = new Schema<IAnswer>({
 
 const QuestionSchema = new Schema<IQuestion>({
   author: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  title: { type: String, required: true },
-  description: { type: String, required: true },
-  tags: [{ type: String }],
-  answers: [AnswerSchema],
-  upvotes: { type: Number, default: 0 },
-  downvotes: { type: Number, default: 0 }
+  question: { type: String, required: true },
+  answer: { type: String, required: true },
+  company: { type: String, required: true },
+  interviewType: { type: String, enum: ['technical', 'behavioral', 'system-design', 'coding', 'case-study'], required: true },
+  category: { type: String, required: true },
+  difficulty: { type: String, enum: ['easy', 'medium', 'hard'], required: true },
+  views: { type: Number, default: 0 },
+  bookmarked: { type: Boolean, default: false },
+  timestamp: { type: Date, default: Date.now },
+  votes: { type: Number, default: 0 },
 }, { timestamps: true });
 
-export const Question = mongoose.models.Question || mongoose.model<IQuestion>('Question', QuestionSchema);
+export const Question = mongoose.model<IQuestion>('Question', QuestionSchema);
 
 

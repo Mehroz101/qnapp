@@ -2,6 +2,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from './ui/button';
 import { authApi } from '../lib/api';
+import { useEffect } from 'react';
 
 export function Navbar() {
   const queryClient = useQueryClient();
@@ -11,6 +12,15 @@ export function Navbar() {
     queryFn: authApi.getProfile,
     retry: false,
   });
+
+  useEffect(() => {
+    // Listen for a custom event dispatched after login
+    const handler = () => {
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+    };
+    window.addEventListener('user-logged-in', handler);
+    return () => window.removeEventListener('user-logged-in', handler);
+  }, [queryClient]);
 
   return (
     <nav className="w-full bg-white border-b shadow-sm mb-4">
@@ -27,6 +37,7 @@ export function Navbar() {
                 await authApi.logout();
                 queryClient.invalidateQueries({ queryKey: ['profile'] });
                 navigate('/');
+                // window.location.reload()
               }}>Logout</Button>
             </>
           ) : (

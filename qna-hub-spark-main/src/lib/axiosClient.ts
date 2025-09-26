@@ -17,7 +17,7 @@ axiosClient.interceptors.request.use(
 );
 
 axiosClient.interceptors.response.use(
-  (response) => response.data,
+  (response) => response,
   (error) => {
     // Global error handling (e.g., show toast, redirect, etc.)
     return Promise.reject(new Error(error?.message || String(error)))

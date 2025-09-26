@@ -1,24 +1,20 @@
-import { Router } from 'express';
-import type { Express, Request, Response } from 'express';
+import { Router, Request, Response } from 'express';
 import { env } from '../config/env';
-import mockAuthRoutes from './mock/auth';
-import mockQnaRoutes from './mock/qna';
 import realAuthRoutes from './authRoutes';
-import realQnaRoutes from './qnaRoutes';
+import qnaRoutes from './qnaRoutes';
+import fs from 'fs';
+import path from 'path';
+import { Question } from '../models/Question';
 
-  const api = Router();
+const api = Router();
 
-  api.get('/health', (_req: Request, res: Response) => {
-    res.json({ ok: true, mock: env.useMockApi });
-  });
+api.get('/health', (_req: Request, res: Response) => {
+  res.json({ ok: true, mock: env.useMockApi });
+});
 
-  if (env.useMockApi) {
-    api.use('/auth', mockAuthRoutes);
-    api.use('/qna', mockQnaRoutes);
-  } else {
-    api.use('/auth', realAuthRoutes);
-    api.use('/qna', realQnaRoutes);
-  }
+
+api.use('/auth', realAuthRoutes);
+api.use('/qna', qnaRoutes);
 
 
 

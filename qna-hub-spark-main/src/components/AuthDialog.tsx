@@ -37,6 +37,7 @@ export function AuthDialog({ open, onOpenChange }: { open: boolean; onOpenChange
     mutationFn: () => loginApi(username, password),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['profile'] });
+      window.dispatchEvent(new Event('user-logged-in'));
       onOpenChange(false);
       if(data.accessToken){
         localStorage.setItem('accessToken', data.accessToken);
@@ -57,6 +58,7 @@ export function AuthDialog({ open, onOpenChange }: { open: boolean; onOpenChange
     mutationFn: () => signupApi(username, password),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['profile'] });
+      window.dispatchEvent(new Event('user-logged-in'));
       onOpenChange(false);
       setError('');
     },
