@@ -1,34 +1,44 @@
-import { useMemo } from 'react';
-import { InterviewQuestion } from '../types';
+import { useMemo } from "react";
+import { InterviewQuestion } from "../types";
 
 interface UseFilteredQuestionsProps {
   questions: InterviewQuestion[];
   searchQuery: string;
   selectedCategories: string[];
-  sortBy: 'newest' | 'votes' | 'company';
+  sortBy: "newest" | "votes" | "company";
 }
 
-export function useFilteredQuestions({ questions, searchQuery, selectedCategories, sortBy }: UseFilteredQuestionsProps) {
+export function useFilteredQuestions({
+  questions,
+  searchQuery,
+  selectedCategories,
+  sortBy,
+}: UseFilteredQuestionsProps) {
+  console.log({ questions });
   return useMemo(() => {
-    const filtered = questions.filter(question => {
-      const searchMatch = searchQuery === '' || 
+    const filtered = questions?.filter((question) => {
+      const searchMatch =
+        searchQuery === "" ||
         question.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
         question.answer.toLowerCase().includes(searchQuery.toLowerCase()) ||
         question.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
         question.category.toLowerCase().includes(searchQuery.toLowerCase());
-      const categoryMatch = selectedCategories.length === 0 || 
+      const categoryMatch =
+        selectedCategories.length === 0 ||
         selectedCategories.includes(question.category);
       return searchMatch && categoryMatch;
     });
     filtered.sort((a, b) => {
       switch (sortBy) {
-        case 'votes':
+        case "votes":
           return b.votes - a.votes;
-        case 'company':
+        case "company":
           return a.company.localeCompare(b.company);
-        case 'newest':
+        case "newest":
         default:
-          return b.timestamp.getTime() - a.timestamp.getTime();
+          return (
+            new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+          );
       }
     });
     return filtered;

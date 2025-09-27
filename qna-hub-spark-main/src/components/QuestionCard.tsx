@@ -15,8 +15,7 @@ interface QuestionCardProps {
 export function QuestionCard({ question, onVote, onBookmark, onClick }: QuestionCardProps) {
   const formatTimeAgo = (date: Date) => {
     const now = new Date();
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-    
+    const diffInHours = Math.floor((now.getTime() - new Date(date).getTime()) / (1000 * 60 * 60));
     if (diffInHours < 1) return 'just now';
     if (diffInHours < 24) return `${diffInHours}h ago`;
     if (diffInHours < 168) return `${Math.floor(diffInHours / 24)}d ago`;
