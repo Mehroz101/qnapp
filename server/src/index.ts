@@ -5,6 +5,7 @@ import { env } from './config/env';
 import { connectMongo } from './lib/mongo';
 import AuthRouter from './routes/authRoutes';
 import QnaRouter from './routes/qnaRoutes';
+import serverless from "@vendia/serverless-express";
 
 const app = express();
 
@@ -28,5 +29,6 @@ connectMongo()
     console.error('Failed to start server', err);
     process.exit(1);
   });
+export const handler = serverless({ app });
 
 
