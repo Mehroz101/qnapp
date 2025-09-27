@@ -23,6 +23,6 @@ export const authService = {
   async getMe(userId: string) {
     const user = await User.findById(userId).exec();
     if (!user) return null;
-    return { id: user._id, username: user.username };
+    return { id: user._id, username: user.username ,bookmarks: user.bookmarks, upvoted: user.upvoted, downvoted: user.downvoted};
   }
 };

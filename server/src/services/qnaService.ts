@@ -1,3 +1,4 @@
+import { Request } from 'express';
 import { Question } from '../models/Question';
 import { User } from '../models/User';
 
@@ -5,8 +6,11 @@ export const qnaService = {
   async createQuestion(data: any) {
     return await (Question as any).create(data);
   },
-  async listQuestions() {
-    return await (Question as any).find().sort({ createdAt: -1 }).limit(100);
+  async listQuestions(req:Request) {
+    // if(!req.user.id){
+      return  await (Question as any).find().sort({ createdAt: -1 }).limit(100);
+    // }
+    // const response =  await (Question as any).find().sort({ createdAt: -1 }).limit(100);
   },
   async getQuestionDetail(id: string) {
     return await (Question as any).findById(id);

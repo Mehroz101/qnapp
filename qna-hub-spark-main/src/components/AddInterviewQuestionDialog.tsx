@@ -30,6 +30,7 @@ export function AddInterviewQuestionDialog({ onAddQuestion }: AddInterviewQuesti
     }
 
    const response  =  onAddQuestion({
+      _id: '', // or generate a unique id if needed
       question: question.trim(),
       answer: answer.trim(),
       company: company.trim(),

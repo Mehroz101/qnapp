@@ -20,8 +20,8 @@ export const qnaController = {
     res.status(201).json(q);
   },
 
-  async listQuestions(_req: Request, res: Response) {
-    const list = await qnaService.listQuestions();
+  async listQuestions(req: Request, res: Response) {
+    const list = await qnaService.listQuestions(req);
     res.json(list);
   },
 
