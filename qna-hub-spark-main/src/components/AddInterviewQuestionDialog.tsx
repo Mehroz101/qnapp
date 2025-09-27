@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Label } from './ui/label';
 
 interface AddInterviewQuestionDialogProps {
-  onAddQuestion: (question: Omit<InterviewQuestion, 'id' | 'author' | 'timestamp' | 'votes' | 'bookmarked' | 'views'>) => void;
+  onAddQuestion: (question: Omit<InterviewQuestion, 'id' | 'author' | 'timestamp' | 'votes' | 'bookmarked' | 'views'>) => boolean;
 }
 
 export function AddInterviewQuestionDialog({ onAddQuestion }: AddInterviewQuestionDialogProps) {
@@ -29,7 +29,7 @@ export function AddInterviewQuestionDialog({ onAddQuestion }: AddInterviewQuesti
       return;
     }
 
-    onAddQuestion({
+   const response  =  onAddQuestion({
       question: question.trim(),
       answer: answer.trim(),
       company: company.trim(),
@@ -37,8 +37,8 @@ export function AddInterviewQuestionDialog({ onAddQuestion }: AddInterviewQuesti
       category: category.trim(),
       difficulty
     });
-
-    // Reset form
+ // Reset form
+ if(response) {
     setQuestion('');
     setAnswer('');
     setCompany('');
@@ -46,6 +46,8 @@ export function AddInterviewQuestionDialog({ onAddQuestion }: AddInterviewQuesti
     setCategory('');
     setDifficulty('medium');
     setOpen(false);
+ }
+   
   };
 
   return (
@@ -89,7 +91,7 @@ export function AddInterviewQuestionDialog({ onAddQuestion }: AddInterviewQuesti
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="interview-type">Interview Type</Label>
-              <Select value={interviewType} onValueChange={(value: any) => setInterviewType(value)}>
+              <Select value={interviewType} onValueChange={(value: 'technical' | 'behavioral' | 'system-design' | 'coding' | 'case-study') => setInterviewType(value)}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -105,7 +107,7 @@ export function AddInterviewQuestionDialog({ onAddQuestion }: AddInterviewQuesti
 
             <div className="space-y-2">
               <Label htmlFor="difficulty">Difficulty</Label>
-              <Select value={difficulty} onValueChange={(value: any) => setDifficulty(value)}>
+              <Select value={difficulty} onValueChange={(value: 'easy' | 'medium' | 'hard') => setDifficulty(value)}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>

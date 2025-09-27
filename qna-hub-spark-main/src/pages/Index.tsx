@@ -39,7 +39,9 @@ const Index = () => {
   // Add question mutation
   const addQuestionMutation = useMutation({
     mutationFn: questionsApi.addQuestion,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['questions'] }),
+    onSuccess: () => {queryClient.invalidateQueries({ queryKey: ['questions'] })
+    return true;
+  },
   });
 
   // Upvote mutation
@@ -76,7 +78,7 @@ const Index = () => {
   });
 
   const selectedQuestion = selectedQuestionId
-    ? questions.find((q: InterviewQuestion) => q.id === selectedQuestionId)
+    ? questions.find((q: InterviewQuestion) => q._id === selectedQuestionId)
     : null;
 
   // Handlers
@@ -94,9 +96,10 @@ const Index = () => {
     bookmarkMutation.mutate(questionId);
   };
 
-  const handleAddQuestion = (newQuestionData: Omit<InterviewQuestion, 'id' | 'author' | 'timestamp' | 'votes' | 'bookmarked' | 'views'>) => {
-    if (!isAuthenticated) return;
+  const handleAddQuestion =  (newQuestionData: Omit<InterviewQuestion, 'id' | 'author' | 'timestamp' | 'votes' | 'bookmarked' | 'views'>) => {
+    if (!isAuthenticated) return false;
     addQuestionMutation.mutate(newQuestionData);
+    return true;
   };
 
   const handleCategoryToggle = (category: string) => {

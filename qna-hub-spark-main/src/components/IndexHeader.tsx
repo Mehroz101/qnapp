@@ -1,7 +1,7 @@
 import { AddInterviewQuestionDialog } from './AddInterviewQuestionDialog';
 
 interface IndexHeaderProps {
-  readonly onAddQuestion: (data: unknown) => void;
+  readonly onAddQuestion: (data: unknown) => boolean;
 }
 
 export function IndexHeader({ onAddQuestion }: IndexHeaderProps) {

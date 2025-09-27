@@ -3,9 +3,12 @@ import { qnaService } from '../services/qnaService';
 import { z } from 'zod';
 
 const createQuestionSchema = z.object({
-  title: z.string().min(3),
-  description: z.string().min(3),
-  tags: z.array(z.string()).optional().default([])
+  question: z.string().min(3),
+  answer: z.string().min(3),
+  category:z.string().min(3),
+  company: z.string().min(2),
+  difficulty: z.enum(['easy', 'medium', 'hard']),
+  interviewType: z.enum(['behavioral', 'technical', 'hr', 'other']),
 });
 
 export const qnaController = {

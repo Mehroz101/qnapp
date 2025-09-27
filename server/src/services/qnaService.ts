@@ -31,25 +31,31 @@ export const qnaService = {
     return q;
   },
   async upvote(id: string, userId: string) {
+    console.log('Upvoting question', id, 'by user', userId);
     const q = await (Question as any).findById(id);
     if (!q) return null;
-    const user = await (User as any).findById(userId);
+    const user = await User.findById(userId);
     if (!user) return null;
     const qidStr = q._id.toString();
+    console.log("==============================")
+    console.log("question",q)
+    console.log("user",user)
+    console.log("==============================")
     const upvotedIds = user.upvoted.map((id: any) => id.toString());
     const downvotedIds = user.downvoted.map((id: any) => id.toString());
     const alreadyUp = upvotedIds.includes(qidStr);
     const alreadyDown = downvotedIds.includes(qidStr);
+    console.log("alreadyUp",alreadyUp)
+    console.log("alreadyDown",alreadyDown)
     if (!alreadyUp) {
       user.upvoted.push(q._id);
-      q.upvotes += 1;
+      q.votes += 1;
     }
     if (alreadyDown) {
       user.downvoted = user.downvoted.filter((id: any) => id.toString() !== qidStr);
-      q.downvotes = Math.max(0, q.downvotes - 1);
     }
     await Promise.all([user.save(), q.save()]);
-    return { upvotes: q.upvotes, downvotes: q.downvotes };
+    return { votes: q.votes };
   },
   async downvote(id: string, userId: string) {
     const q = await (Question as any).findById(id);
@@ -61,16 +67,17 @@ export const qnaService = {
     const upvotedIds = user.upvoted.map((id: any) => id.toString());
     const alreadyDown = downvotedIds.includes(qidStr);
     const alreadyUp = upvotedIds.includes(qidStr);
+      console.log("alreadyUp",alreadyUp)
+    console.log("alreadyDown",alreadyDown)
     if (!alreadyDown) {
       user.downvoted.push(q._id);
-      q.downvotes += 1;
+      q.votes -= 1;
     }
     if (alreadyUp) {
       user.upvoted = user.upvoted.filter((id: any) => id.toString() !== qidStr);
-      q.upvotes = Math.max(0, q.upvotes - 1);
     }
     await Promise.all([user.save(), q.save()]);
-    return { upvotes: q.upvotes, downvotes: q.downvotes };
+    return { votes: q.votes };
   },
   async bookmark(id: string, userId: string) {
     const user = await (User as any).findById(userId);

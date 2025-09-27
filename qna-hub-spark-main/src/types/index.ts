@@ -1,5 +1,5 @@
 export interface InterviewQuestion {
-  id: string;
+  _id: string;
   question: string;
   answer: string;
   company: string;
@@ -13,8 +13,7 @@ export interface InterviewQuestion {
   views: number;
 }
 
-// Keep Question interface for backward compatibility but mark as deprecated
-export interface Question extends InterviewQuestion {}
+// The Question interface has been removed as it was redundant with InterviewQuestion.
 
 export interface Answer {
   id: string;

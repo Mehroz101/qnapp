@@ -5,6 +5,8 @@ export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL + '/api';
 const axiosClient = axios.create({
   baseURL: API_BASE_URL,
   withCredentials: true,
+  headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('accessToken') || ''}` },
+
 });
 
 // Add interceptors for request/response

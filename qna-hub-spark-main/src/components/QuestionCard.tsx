@@ -41,7 +41,7 @@ export function QuestionCard({ question, onVote, onBookmark, onClick }: Question
             size="sm"
             onClick={(e) => {
               e.stopPropagation();
-              onVote(question.id, 'up');
+              onVote(question._id, 'up');
             }}
             className="h-7 w-7 p-0 hover:bg-success/10 hover:text-success transition-colors"
           >
@@ -55,7 +55,7 @@ export function QuestionCard({ question, onVote, onBookmark, onClick }: Question
             size="sm"
             onClick={(e) => {
               e.stopPropagation();
-              onVote(question.id, 'down');
+              onVote(question._id, 'down');
             }}
             className="h-7 w-7 p-0 hover:bg-destructive/10 hover:text-destructive transition-colors"
           >
@@ -64,7 +64,7 @@ export function QuestionCard({ question, onVote, onBookmark, onClick }: Question
         </div>
 
         {/* Question content */}
-        <div className="flex-1 min-w-0" onClick={() => onClick(question.id)}>
+        <div className="flex-1 min-w-0" onClick={() => onClick(question._id)}>
           {/* Header with company and metadata */}
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
@@ -115,7 +115,7 @@ export function QuestionCard({ question, onVote, onBookmark, onClick }: Question
               size="sm"
               onClick={(e) => {
                 e.stopPropagation();
-                onBookmark(question.id);
+                onBookmark(question._id);
               }}
               className={`h-7 w-7 p-0 ${
                 question.bookmarked
