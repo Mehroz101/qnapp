@@ -22,6 +22,9 @@ app.use("/api/qna", QnaRouter);
 app.get("/health", (_req, res) => {
   res.json({ ok: true });
 });
+app.get("/", (_req, res) => {
+  res.send("server is running");
+});
 
 // Normal server (for local dev)
 connectMongo()
