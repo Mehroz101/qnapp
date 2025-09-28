@@ -39,4 +39,4 @@ connectMongo()
   });
 
 // Lambda handler (for serverless deployment)
-export const handler = serverless({ app });
+export default serverless({ app });
