@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { authRequired } from '../middleware/auth';
-import { qnaController } from '../controllers/qnaController';
+import { authRequired } from '../middleware/auth.js';
+import { qnaController } from '../controllers/qnaController.js';
 
 const router = Router();
 

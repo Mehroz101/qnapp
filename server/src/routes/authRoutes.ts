@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { authRequired } from '../middleware/auth';
-import { authController } from '../controllers/authController';
+import { authRequired } from '../middleware/auth.js';
+import { authController } from '../controllers/authController.js';
 
 const router = Router();
 router.get('/health', (_req, res) => {

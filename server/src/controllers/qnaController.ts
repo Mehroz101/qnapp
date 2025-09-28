@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { qnaService } from '../services/qnaService';
+import { qnaService } from '../services/qnaService.js';
 import { z } from 'zod';
 
 const createQuestionSchema = z.object({

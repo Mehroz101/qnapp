@@ -1,6 +1,6 @@
 import { Request } from 'express';
-import { Question } from '../models/Question';
-import { User } from '../models/User';
+import { Question } from '../models/Question.js';
+import { User } from '../models/User.js';
 
 export const qnaService = {
   async createQuestion(data: any) {
