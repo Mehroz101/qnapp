@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 import { User } from '../models/User';
 import bcrypt from 'bcryptjs';
-import { env } from '../config/env';
 import jwt from "jsonwebtoken";
 
 export const authService = {
@@ -17,7 +16,10 @@ export const authService = {
     if (!user) return null;
     const valid = await bcrypt.compare(data.password, user.passwordHash);
     if (!valid) return null;
-    const accessToken = jwt.sign({ userId: user._id }, env.jwtSecret, { expiresIn: '7d' }); 
+    if (!process.env.JWT_SECRET) {
+      throw new Error("JWT_SECRET environment variable is not defined");
+    }
+    const accessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' }); 
     return { id: user._id, username: user.username, accessToken };
   },
   async getMe(userId: string) {

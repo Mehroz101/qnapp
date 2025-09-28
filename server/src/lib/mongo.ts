@@ -1,13 +1,11 @@
 import mongoose from 'mongoose';
-import { env } from '../config/env';
 
 export async function connectMongo() {
-  if (env.useMockApi) {
-    console.log('USE_MOCK_API=true → skipping Mongo connection');
-    return;
-  }
-  await mongoose.connect(env.mongoUri);
+ const mongoUri = process.env.MONGO_URI;
+ if (!mongoUri) {
+   throw new Error('MONGO_URI environment variable is not defined');
+ }
+  await mongoose.connect(mongoUri);
   console.log('Connected to MongoDB');
 }
-
 
