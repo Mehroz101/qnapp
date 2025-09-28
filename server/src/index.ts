@@ -9,7 +9,11 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const app = express();
-
+app.use((req, res, next) => {
+  console.log("Incoming request from:", req.headers.origin);
+  console.log("ENV :", process.env.CLIENT_ORIGIN);
+  next();
+});
 app.use(cors({ origin: process.env.CLIENT_ORIGIN, credentials: true }));
 app.use(express.json({ limit: '1mb' }));
 app.use(morgan('dev'));
