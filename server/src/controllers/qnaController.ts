@@ -21,7 +21,7 @@ export const qnaController = {
   },
 
   async listQuestions(req: Request, res: Response) {
-    const userId = (req as any).auth.userId;
+    const userId = (req as any).auth?.userId;
     if (userId) {
       const list = await qnaService.listQuestions(userId);
       res.json(list);
