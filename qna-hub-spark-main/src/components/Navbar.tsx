@@ -59,7 +59,7 @@ export function Navbar() {
           to="/"
           className="font-bold text-2xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
         >
-          QnA Hub
+          Qwizzy
         </Link>
 
         {/* User Actions */}
