@@ -38,6 +38,7 @@ export function AuthDialog({ open, onOpenChange }: { open: boolean; onOpenChange
     mutationFn: () => loginApi(username, password),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['profile'] });
+      window.location.reload();
       window.dispatchEvent(new Event('user-logged-in'));
       onOpenChange(false);
       if (data.accessToken) {
@@ -103,8 +104,8 @@ export function AuthDialog({ open, onOpenChange }: { open: boolean; onOpenChange
       <div className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
         {/* Header with Gradient */}
         <div className={`px-8 py-6 text-white ${mode === 'login'
-            ? "bg-gradient-to-r from-blue-600 to-purple-600"
-            : "bg-gradient-to-r from-green-600 to-teal-600"
+          ? "bg-gradient-to-r from-blue-600 to-purple-600"
+          : "bg-gradient-to-r from-green-600 to-teal-600"
           }`}>
           <div className="space-y-2">
             <div className="flex items-center justify-center w-12 h-12 bg-white/20 rounded-xl mb-2 mx-auto">
@@ -189,8 +190,8 @@ export function AuthDialog({ open, onOpenChange }: { open: boolean; onOpenChange
               type="submit"
               disabled={isLoading}
               className={`w-full py-3 px-4 rounded-lg text-base font-semibold transition-all duration-200 ${mode === 'login'
-                  ? "bg-blue-600 hover:bg-blue-700 text-white"
-                  : "bg-green-600 hover:bg-green-700 text-white"
+                ? "bg-blue-600 hover:bg-blue-700 text-white"
+                : "bg-green-600 hover:bg-green-700 text-white"
                 } ${isLoading ? "opacity-50 cursor-not-allowed" : "hover:shadow-lg"
                 }`}
             >
@@ -214,8 +215,8 @@ export function AuthDialog({ open, onOpenChange }: { open: boolean; onOpenChange
                 onClick={() => switchMode(mode === 'login' ? 'signup' : 'login')}
                 disabled={isLoading}
                 className={`font-semibold transition-colors ${mode === 'login'
-                    ? "text-green-600 hover:text-green-700"
-                    : "text-blue-600 hover:text-blue-700"
+                  ? "text-green-600 hover:text-green-700"
+                  : "text-blue-600 hover:text-blue-700"
                   } ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {mode === 'login' ? 'Sign up' : 'Sign in'}
