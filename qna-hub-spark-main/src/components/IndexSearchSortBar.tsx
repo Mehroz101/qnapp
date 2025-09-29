@@ -1,17 +1,14 @@
-import { Search, Filter } from 'lucide-react';
-import { Input } from './ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Button } from './ui/button';
+import { useState } from 'react';
 
 type SortByType = 'newest' | 'votes' | 'company';
 
 interface IndexSearchSortBarProps {
-  readonly searchQuery: string;
-  readonly setSearchQuery: (q: string) => void;
-  readonly sortBy: SortByType;
-  readonly setSortBy: (v: SortByType) => void;
-  readonly showFilters: boolean;
-  readonly setShowFilters: (v: boolean) => void;
+  searchQuery: string;
+  setSearchQuery: (q: string) => void;
+  sortBy: SortByType;
+  setSortBy: (v: SortByType) => void;
+  showFilters: boolean;
+  setShowFilters: (v: boolean) => void;
 }
 
 export function IndexSearchSortBar({
@@ -24,34 +21,65 @@ export function IndexSearchSortBar({
 }: IndexSearchSortBarProps) {
   return (
     <div className="flex flex-col lg:flex-row gap-4 mb-6">
-      <div className="flex-1 relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
+      {/* Search box */}
+      <div className="relative flex-1">
+        {/* magnifying glass icon as inline SVG */}
+        <svg
+          className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"
+          />
+        </svg>
+        <input
+          type="text"
           placeholder="Search questions, companies, categories..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-10"
+          className="w-full pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200"
         />
       </div>
-      <div className="flex gap-2">
-        <Select value={sortBy} onValueChange={(value: 'newest' | 'votes' | 'company') => setSortBy(value)}>
-          <SelectTrigger className="w-[140px]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="newest">Newest</SelectItem>
-            <SelectItem value="votes">Most Voted</SelectItem>
-            <SelectItem value="company">Company A-Z</SelectItem>
-          </SelectContent>
-        </Select>
-        <Button
-          variant="outline"
-          onClick={() => setShowFilters(!showFilters)}
-          className="lg:hidden"
+
+      {/* Sort & Filters */}
+      <div className="flex gap-2 items-center">
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value as SortByType)}
+          className="w-36 px-3 py-2 border rounded-md bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          <Filter className="h-4 w-4 mr-2" />
+          <option value="newest">Newest</option>
+          <option value="votes">Most Voted</option>
+          <option value="company">Company A–Z</option>
+        </select>
+
+        {/* Filters button visible only on mobile */}
+        <button
+          type="button"
+          onClick={() => setShowFilters(!showFilters)}
+          className="lg:hidden flex items-center px-3 py-2 border rounded-md bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          {/* filter icon as inline SVG */}
+          <svg
+            className="h-4 w-4 mr-2"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M3 4h18M6 12h12M10 20h4"
+            />
+          </svg>
           Filters
-        </Button>
+        </button>
       </div>
     </div>
   );

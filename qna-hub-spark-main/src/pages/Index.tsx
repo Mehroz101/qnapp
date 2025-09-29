@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { InterviewQuestion } from '../types';
 import { InterviewQuestionDetail } from '../components/InterviewQuestionDetail';
 import { useFilteredQuestions } from '../hooks/useFilteredQuestions';
@@ -8,6 +8,7 @@ import { IndexSidebarFilters } from '../components/IndexSidebarFilters';
 import { IndexQuestionsList } from '../components/IndexQuestionsList';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { questionsApi, authApi } from '../lib/api';
+import { useDebounce } from 'use-debounce'; // or write a small hook
 
 const Index = () => {
   const queryClient = useQueryClient();
@@ -16,6 +17,8 @@ const Index = () => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<'newest' | 'votes' | 'company'>('newest');
   const [showFilters, setShowFilters] = useState(false);
+  const [availableCategories, setAvailableCategories] = useState<string[]>([]);
+  const [debouncedSearch] = useDebounce(searchQuery, 400);
 
   // Auth state
   const { data: user, isLoading: loadingUser } = useQuery({
@@ -32,10 +35,23 @@ const Index = () => {
     isError,
     error,
   } = useQuery({
-    queryKey: ['questions', { searchQuery, selectedCategories, sortBy }],
-    queryFn: () => questionsApi.list({ search: searchQuery, categories: selectedCategories, sortBy }),
-  });
+    queryKey: ['questions', { searchQuery: debouncedSearch, selectedCategories, sortBy }],
+    queryFn: () => questionsApi.list({
+      search: debouncedSearch,
+      categories: selectedCategories,
+      sortBy,
+    }),
 
+  });
+  useEffect(() => {
+    if (searchQuery === '' && selectedCategories.length === 0) {
+      const categorySet = new Set<string>();
+      questions.forEach((question: InterviewQuestion) => {
+        categorySet.add(question.category);
+      });
+      setAvailableCategories(Array.from(categorySet).sort((a, b) => a.localeCompare(b)));
+    }
+  }, [questions]);
   // Add question mutation
   const addQuestionMutation = useMutation({
     mutationFn: questionsApi.addQuestion,
@@ -63,13 +79,7 @@ const Index = () => {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['questions'] }),
   });
 
-  const availableCategories = useMemo(() => {
-    const categorySet = new Set<string>();
-    questions.forEach((question: InterviewQuestion) => {
-      categorySet.add(question.category);
-    });
-    return Array.from(categorySet).sort((a, b) => a.localeCompare(b));
-  }, [questions]);
+
 
   const filteredQuestions = useFilteredQuestions({
     questions,
