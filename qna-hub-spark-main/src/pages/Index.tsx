@@ -18,7 +18,7 @@ const Index = () => {
   const [sortBy, setSortBy] = useState<'newest' | 'votes' | 'company'>('newest');
   const [showFilters, setShowFilters] = useState(false);
   const [availableCategories, setAvailableCategories] = useState<string[]>([]);
-  const [debouncedSearch] = useDebounce(searchQuery, 400);
+  const [debouncedSearch] = useDebounce(searchQuery, 600);
 
   // Auth state
   const { data: user, isLoading: loadingUser } = useQuery({
