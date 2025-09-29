@@ -6,9 +6,9 @@ export const qnaService = {
   async createQuestion(data: any) {
     return await (Question as any).create(data);
   },
-  async listQuestions(req:Request) {
+  async listQuestions(req: Request) {
     // if(!req.user.id){
-      return  await (Question as any).find().sort({ createdAt: -1 }).limit(100);
+    return await (Question as any).find().sort({ createdAt: -1 }).limit(100);
     // }
     // const response =  await (Question as any).find().sort({ createdAt: -1 }).limit(100);
   },
@@ -42,22 +42,24 @@ export const qnaService = {
     if (!user) return null;
     const qidStr = q._id.toString();
     console.log("==============================")
-    console.log("question",q)
-    console.log("user",user)
+    console.log("question", q)
+    console.log("user", user)
     console.log("==============================")
     const upvotedIds = user.upvoted.map((id: any) => id.toString());
     const downvotedIds = user.downvoted.map((id: any) => id.toString());
     const alreadyUp = upvotedIds.includes(qidStr);
     const alreadyDown = downvotedIds.includes(qidStr);
-    console.log("alreadyUp",alreadyUp)
-    console.log("alreadyDown",alreadyDown)
+    console.log("alreadyUp", alreadyUp)
+    console.log("alreadyDown", alreadyDown)
     if (!alreadyUp) {
       user.upvoted.push(q._id);
       q.votes += 1;
     }
     if (alreadyDown) {
       user.downvoted = user.downvoted.filter((id: any) => id.toString() !== qidStr);
+      q.votes += 1;
     }
+
     await Promise.all([user.save(), q.save()]);
     return { votes: q.votes };
   },
@@ -71,14 +73,15 @@ export const qnaService = {
     const upvotedIds = user.upvoted.map((id: any) => id.toString());
     const alreadyDown = downvotedIds.includes(qidStr);
     const alreadyUp = upvotedIds.includes(qidStr);
-      console.log("alreadyUp",alreadyUp)
-    console.log("alreadyDown",alreadyDown)
+    console.log("alreadyUp", alreadyUp)
+    console.log("alreadyDown", alreadyDown)
     if (!alreadyDown) {
       user.downvoted.push(q._id);
       q.votes -= 1;
     }
     if (alreadyUp) {
       user.upvoted = user.upvoted.filter((id: any) => id.toString() !== qidStr);
+      q.votes -= 1;
     }
     await Promise.all([user.save(), q.save()]);
     return { votes: q.votes };

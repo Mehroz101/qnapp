@@ -4,6 +4,9 @@ import { categoryColors } from '../data/interviewQuestions';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { Badge } from './ui/badge';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
+import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
+import ReactMarkdown from 'react-markdown'
 
 interface InterviewQuestionDetailProps {
   question: InterviewQuestion;
@@ -12,6 +15,27 @@ interface InterviewQuestionDetailProps {
   onBack: () => void;
 }
 
+type Props = {
+  language: string
+  value: string
+}
+
+const CodeBlock: React.FC<Props> = ({ language, value }) => (
+  <SyntaxHighlighter
+    language={language}
+    style={oneDark}
+    showLineNumbers
+    wrapLines
+    customStyle={{
+      borderRadius: '12px',
+      padding: '1rem',
+      fontSize: '0.9rem',
+      background: '#1e1e1e',
+    }}
+  >
+    {value.trim()}
+  </SyntaxHighlighter>
+)
 export function InterviewQuestionDetail({
   question,
   onVote,
@@ -126,7 +150,21 @@ export function InterviewQuestionDetail({
 
               <div className="bg-muted/30 rounded-lg p-6 mb-6">
                 <pre className="whitespace-pre-wrap font-sans text-foreground leading-relaxed text-sm">
-                  {question.answer}
+                  <ReactMarkdown
+                    components={{
+                      code({ node, className, children, ...props }: any) {
+                        const match = /language-(\w+)/.exec(className || '')
+                        const inline = props.inline;
+                        return !inline && match ? (
+                          <CodeBlock language={match[1]} value={String(children)} />
+                        ) : (
+                          <code {...props}>{children}</code>
+                        )
+                      }
+                    }}
+                  >
+                    {question.answer}
+                  </ReactMarkdown>
                 </pre>
               </div>
 
