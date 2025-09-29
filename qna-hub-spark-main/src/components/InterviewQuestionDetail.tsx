@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { ArrowUp, ArrowDown, Bookmark, Eye, Building2, Clock, ArrowLeft } from 'lucide-react';
 import { InterviewQuestion } from '../types';
 import { categoryColors } from '../data/interviewQuestions';
@@ -13,19 +12,19 @@ interface InterviewQuestionDetailProps {
   onBack: () => void;
 }
 
-export function InterviewQuestionDetail({ 
-  question, 
-  onVote, 
+export function InterviewQuestionDetail({
+  question,
+  onVote,
   onBookmark,
   onBack
-}: InterviewQuestionDetailProps) {
+}: Readonly<InterviewQuestionDetailProps>) {
   const formatTimeAgo = (date: Date) => {
     const now = new Date();
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-    
-    if (diffInHours < 1) return 'just now';
-    if (diffInHours < 24) return `${diffInHours}h ago`;
-    if (diffInHours < 168) return `${Math.floor(diffInHours / 24)}d ago`;
+    const diffInHours = Math.floor((now.getTime() - new Date(date).getTime()) / (1000 * 60 * 60));
+
+    if (diffInHours < 1) { return 'just now'; }
+    if (diffInHours < 24) { return `${diffInHours}h ago`; }
+    if (diffInHours < 168) { return `${Math.floor(diffInHours / 24)}d ago`; }
     return date.toLocaleDateString();
   };
 
@@ -71,12 +70,11 @@ export function InterviewQuestionDetail({
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => onBookmark(question.id)}
-                  className={`h-8 w-8 p-0 ${
-                    question.bookmarked
-                      ? 'text-warning hover:text-warning/80'
-                      : 'hover:text-warning'
-                  }`}
+                  onClick={() => onBookmark(question._id)}
+                  className={`h-8 w-8 p-0 ${question.bookmarked
+                    ? 'text-warning hover:text-warning/80'
+                    : 'hover:text-warning'
+                    }`}
                 >
                   <Bookmark className={`h-4 w-4 ${question.bookmarked ? 'fill-current' : ''}`} />
                 </Button>
@@ -88,7 +86,7 @@ export function InterviewQuestionDetail({
               <h1 className="text-2xl font-semibold text-foreground mb-4 leading-relaxed">
                 {question.question}
               </h1>
-              
+
               <div className="flex flex-wrap gap-2 mb-6">
                 <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
                   {question.interviewType}
@@ -107,25 +105,25 @@ export function InterviewQuestionDetail({
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => onVote(question.id, 'up')}
+                    onClick={() => onVote(question._id, 'up')}
                     className="h-7 w-7 p-0 hover:bg-success/10 hover:text-success transition-colors"
                   >
                     <ArrowUp className="h-4 w-4" />
                   </Button>
-                  
+
                   <span className="font-medium text-foreground min-w-[20px] text-center">{question.votes}</span>
-                  
+
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => onVote(question.id, 'down')}
+                    onClick={() => onVote(question._id, 'down')}
                     className="h-7 w-7 p-0 hover:bg-destructive/10 hover:text-destructive transition-colors"
                   >
                     <ArrowDown className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
-              
+
               <div className="bg-muted/30 rounded-lg p-6 mb-6">
                 <pre className="whitespace-pre-wrap font-sans text-foreground leading-relaxed text-sm">
                   {question.answer}

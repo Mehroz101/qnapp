@@ -13,7 +13,7 @@ type IndexQuestionsListProps = Readonly<{
 
 function incrementQuestionViews(id: string, setQuestions: React.Dispatch<React.SetStateAction<InterviewQuestion[]>>) {
   setQuestions(prev =>
-    prev.map(q => q.id === id ? { ...q, views: q.views + 1 } : q)
+    prev.map(q => q._id === id ? { ...q, views: q.views + 1 } : q)
   );
 }
 
@@ -54,7 +54,7 @@ export function IndexQuestionsList({
           </div>
           {filteredQuestions.map((question) => (
             <QuestionCard
-              key={question.id}
+              key={question._id}
               question={question}
               onVote={handleVote}
               onBookmark={handleBookmark}

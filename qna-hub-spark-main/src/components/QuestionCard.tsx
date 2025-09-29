@@ -12,13 +12,13 @@ interface QuestionCardProps {
   onClick: (questionId: string) => void;
 }
 
-export function QuestionCard({ question, onVote, onBookmark, onClick }: QuestionCardProps) {
+export function QuestionCard({ question, onVote, onBookmark, onClick }: Readonly<QuestionCardProps>) {
   const formatTimeAgo = (date: Date) => {
     const now = new Date();
     const diffInHours = Math.floor((now.getTime() - new Date(date).getTime()) / (1000 * 60 * 60));
-    if (diffInHours < 1) return 'just now';
-    if (diffInHours < 24) return `${diffInHours}h ago`;
-    if (diffInHours < 168) return `${Math.floor(diffInHours / 24)}d ago`;
+    if (diffInHours < 1) { return 'just now'; }
+    if (diffInHours < 24) { return `${diffInHours}h ago`; }
+    if (diffInHours < 168) { return `${Math.floor(diffInHours / 24)}d ago`; }
     return date.toLocaleDateString();
   };
 
@@ -47,9 +47,9 @@ export function QuestionCard({ question, onVote, onBookmark, onClick }: Question
           >
             <ArrowUp className="h-4 w-4" />
           </Button>
-          
+
           <span className="font-medium text-foreground">{question.votes}</span>
-          
+
           <Button
             variant="ghost"
             size="sm"
@@ -84,7 +84,7 @@ export function QuestionCard({ question, onVote, onBookmark, onClick }: Question
           <h3 className="text-base font-medium text-foreground hover:text-primary transition-colors mb-3 line-clamp-2">
             {question.question}
           </h3>
-          
+
           {/* Answer preview */}
           <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
             {question.answer}
@@ -109,7 +109,7 @@ export function QuestionCard({ question, onVote, onBookmark, onClick }: Question
               </div>
               <span>by {question.author}</span>
             </div>
-            
+
             <Button
               variant="ghost"
               size="sm"
@@ -117,11 +117,10 @@ export function QuestionCard({ question, onVote, onBookmark, onClick }: Question
                 e.stopPropagation();
                 onBookmark(question._id);
               }}
-              className={`h-7 w-7 p-0 ${
-                question.bookmarked
-                  ? 'text-warning hover:text-warning/80'
-                  : 'hover:text-warning'
-              }`}
+              className={`h-7 w-7 p-0 ${question.bookmarked
+                ? 'text-warning hover:text-warning/80'
+                : 'hover:text-warning'
+                }`}
             >
               <Bookmark className={`h-4 w-4 ${question.bookmarked ? 'fill-current' : ''}`} />
             </Button>

@@ -39,9 +39,10 @@ const Index = () => {
   // Add question mutation
   const addQuestionMutation = useMutation({
     mutationFn: questionsApi.addQuestion,
-    onSuccess: () => {queryClient.invalidateQueries({ queryKey: ['questions'] })
-    return true;
-  },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['questions'] })
+      return true;
+    },
   });
 
   // Upvote mutation
@@ -83,7 +84,7 @@ const Index = () => {
 
   // Handlers
   const handleVote = (questionId: string, direction: 'up' | 'down') => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated) { return };
     if (direction === 'up') {
       upvoteMutation.mutate(questionId);
     } else {
@@ -92,12 +93,14 @@ const Index = () => {
   };
 
   const handleBookmark = (questionId: string) => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated) { return; };
     bookmarkMutation.mutate(questionId);
   };
 
-  const handleAddQuestion =  (newQuestionData: Omit<InterviewQuestion, 'id' | 'author' | 'timestamp' | 'votes' | 'bookmarked' | 'views'>) => {
-    if (!isAuthenticated) return false;
+  const handleAddQuestion = (newQuestionData: Omit<InterviewQuestion, 'id' | 'author' | 'timestamp' | 'votes' | 'bookmarked' | 'views'>) => {
+    if (!isAuthenticated) {
+      return false;
+    }
     addQuestionMutation.mutate(newQuestionData);
     return true;
   };
@@ -160,7 +163,7 @@ const Index = () => {
                 handleBookmark={handleBookmark}
                 handleClearFilters={handleClearFilters}
                 setSelectedQuestionId={setSelectedQuestionId}
-                setQuestions={() => {}}
+                setQuestions={() => { }}
               />
             )}
           </div>
