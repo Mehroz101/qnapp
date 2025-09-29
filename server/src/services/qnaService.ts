@@ -49,14 +49,17 @@ export const qnaService = {
     const downvotedIds = user.downvoted.map((id: any) => id.toString());
     const alreadyUp = upvotedIds.includes(qidStr);
     const alreadyDown = downvotedIds.includes(qidStr);
-    console.log("alreadyUp", alreadyUp)
-    console.log("alreadyDown", alreadyDown)
-    if (!alreadyUp) {
-      user.upvoted.push(q._id);
+    if (alreadyUp) {
+      // undo upvote
+      user.upvoted = user.upvoted.filter((x: any) => x.toString() !== qidStr);
+      q.votes -= 1;
+    } else if (alreadyDown) {
+      // 1st click after a downvote: just cancel the downvote (neutralize)
+      user.downvoted = user.downvoted.filter((x: any) => x.toString() !== qidStr);
       q.votes += 1;
-    }
-    if (alreadyDown) {
-      user.downvoted = user.downvoted.filter((id: any) => id.toString() !== qidStr);
+    } else {
+      // brand new upvote
+      user.upvoted.push(q._id);
       q.votes += 1;
     }
 
@@ -64,6 +67,7 @@ export const qnaService = {
     return { votes: q.votes };
   },
   async downvote(id: string, userId: string) {
+    console.log('Downvoting question', id, 'by user', userId);
     const q = await (Question as any).findById(id);
     if (!q) return null;
     const user = await (User as any).findById(userId);
@@ -73,14 +77,17 @@ export const qnaService = {
     const upvotedIds = user.upvoted.map((id: any) => id.toString());
     const alreadyDown = downvotedIds.includes(qidStr);
     const alreadyUp = upvotedIds.includes(qidStr);
-    console.log("alreadyUp", alreadyUp)
-    console.log("alreadyDown", alreadyDown)
-    if (!alreadyDown) {
-      user.downvoted.push(q._id);
+    if (alreadyDown) {
+      // undo downvote
+      user.downvoted = user.downvoted.filter((x: any) => x.toString() !== qidStr);
+      q.votes += 1;
+    } else if (alreadyUp) {
+      // 1st click after an upvote: just cancel the upvote (neutralize)
+      user.upvoted = user.upvoted.filter((x: any) => x.toString() !== qidStr);
       q.votes -= 1;
-    }
-    if (alreadyUp) {
-      user.upvoted = user.upvoted.filter((id: any) => id.toString() !== qidStr);
+    } else {
+      // brand new downvote
+      user.downvoted.push(q._id);
       q.votes -= 1;
     }
     await Promise.all([user.save(), q.save()]);

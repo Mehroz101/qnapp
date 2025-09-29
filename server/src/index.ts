@@ -9,11 +9,6 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const app = express();
-app.use((req, res, next) => {
-  console.log("Incoming request from:", req.headers.origin);
-  console.log("ENV :", process.env.CLIENT_ORIGIN);
-  next();
-});
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json({ limit: '1mb' }));
 app.use(morgan('dev'));
@@ -28,13 +23,13 @@ app.get("/health", (_req, res) => {
 app.get("/", (_req, res) => {
   res.send("server is running");
 });
-  connectMongo()
+connectMongo()
 
 // Local dev server (only runs outside Vercel)
 if (process.env.NODE_ENV !== "production") {
-      app.listen(process.env.PORT || 3000, () => {
-        console.log(`✅ API listening on http://localhost:${process.env.PORT || 3000}`);
-      });
+  app.listen(process.env.PORT || 3000, () => {
+    console.log(`✅ API listening on http://localhost:${process.env.PORT || 3000}`);
+  });
 }
 
 // Vercel picks up this Express app automatically
