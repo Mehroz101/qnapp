@@ -18,7 +18,7 @@ export const authApi = {
     localStorage.removeItem('accessToken');
 
     return {
-        message: 'Logged out',
+      message: 'Logged out',
     };
   },
 };
@@ -46,5 +46,9 @@ export const questionsApi = {
   },
   async bookmark(id: string) {
     return (await axiosClient.post(`/qna/${id}/bookmark`)).data;
+  },
+  async editQuestion(data: { _id: string } & Partial<InterviewQuestion>) {
+    // Sends a PUT request to update a question by _id
+    return (await axiosClient.put(`/qna/${data._id}`, data)).data;
   },
 };

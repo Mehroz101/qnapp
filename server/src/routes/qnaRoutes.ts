@@ -1,12 +1,13 @@
 import { Router } from 'express';
 import { authRequired } from '../middleware/auth.js';
+import { authOptional } from '../middleware/Optionalauth.js';
 import { qnaController } from '../controllers/qnaController.js';
 
 const router = Router();
 
 router.post('/', authRequired, qnaController.createQuestion);
-router.get('/', qnaController.listQuestions);
-router.get('/:id', qnaController.getQuestionDetail);
+router.get('/', authOptional, qnaController.listQuestions);
+router.get('/:id', authOptional, qnaController.getQuestionDetail);
 router.put('/:id', authRequired, qnaController.updateQuestion);
 router.delete('/:id', authRequired, qnaController.deleteQuestion);
 router.post('/:id/answers', authRequired, qnaController.answerQuestion);

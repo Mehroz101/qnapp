@@ -125,6 +125,7 @@ const Index = () => {
         onVote={handleVote}
         onBookmark={handleBookmark}
         onBack={() => setSelectedQuestionId(null)}
+        userId={user?.data?.id}
       />
     );
   }

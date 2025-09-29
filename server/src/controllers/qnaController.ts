@@ -5,7 +5,7 @@ import { z } from 'zod';
 const createQuestionSchema = z.object({
   question: z.string().min(3),
   answer: z.string().min(3),
-  category:z.string().min(3),
+  category: z.string().min(3),
   company: z.string().min(2),
   difficulty: z.enum(['easy', 'medium', 'hard']),
   interviewType: z.enum(['behavioral', 'technical', 'hr', 'other']),
@@ -21,7 +21,13 @@ export const qnaController = {
   },
 
   async listQuestions(req: Request, res: Response) {
-    const list = await qnaService.listQuestions(req);
+    const userId = (req as any).auth.userId;
+    if (userId) {
+      const list = await qnaService.listQuestions(userId);
+      res.json(list);
+      return;
+    }
+    const list = await qnaService.listQuestions();
     res.json(list);
   },
 

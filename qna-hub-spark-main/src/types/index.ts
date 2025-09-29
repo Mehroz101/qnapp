@@ -11,6 +11,8 @@ export interface InterviewQuestion {
   votes: number;
   bookmarked: boolean;
   views: number;
+  myVote?: "up" | "down" | null;
+
 }
 
 // The Question interface has been removed as it was redundant with InterviewQuestion.

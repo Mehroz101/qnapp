@@ -43,7 +43,7 @@ export function QuestionCard({ question, onVote, onBookmark, onClick }: Readonly
               e.stopPropagation();
               onVote(question._id, 'up');
             }}
-            className="h-7 w-7 p-0 hover:bg-success/10 hover:text-success transition-colors"
+            className={`h-7 w-7 p-0 hover:bg-success/20 hover:text-success transition-colors ${question.myVote === 'up' ? 'bg-success/10 text-success ' : ''}`}
           >
             <ArrowUp className="h-4 w-4" />
           </Button>
@@ -57,7 +57,7 @@ export function QuestionCard({ question, onVote, onBookmark, onClick }: Readonly
               e.stopPropagation();
               onVote(question._id, 'down');
             }}
-            className="h-7 w-7 p-0 hover:bg-destructive/10 hover:text-destructive transition-colors"
+            className={`h-7 w-7 p-0 hover:bg-destructive/20 hover:text-destructive transition-colors ${question.myVote === 'down' ? 'bg-destructive/10 text-destructive' : ''}`}
           >
             <ArrowDown className="h-4 w-4" />
           </Button>

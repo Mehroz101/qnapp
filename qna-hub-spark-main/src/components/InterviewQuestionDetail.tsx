@@ -1,4 +1,4 @@
-import { ArrowUp, ArrowDown, Bookmark, Eye, Building2, Clock, ArrowLeft } from 'lucide-react';
+import { ArrowUp, ArrowDown, Bookmark, Eye, Building2, Clock, ArrowLeft, Edit } from 'lucide-react';
 import { InterviewQuestion } from '../types';
 import { categoryColors } from '../data/interviewQuestions';
 import { Button } from './ui/button';
@@ -7,12 +7,17 @@ import { Badge } from './ui/badge';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import ReactMarkdown from 'react-markdown'
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { questionsApi } from '@/lib/api';
+import AddInterviewQuestionDialog from './AddInterviewQuestionDialog';
+import { useState } from 'react';
 
 interface InterviewQuestionDetailProps {
   question: InterviewQuestion;
   onVote: (questionId: string, direction: 'up' | 'down') => void;
   onBookmark: (questionId: string) => void;
   onBack: () => void;
+  userId: string | undefined;
 }
 
 type Props = {
@@ -40,8 +45,12 @@ export function InterviewQuestionDetail({
   question,
   onVote,
   onBookmark,
-  onBack
+  onBack,
+  userId
 }: Readonly<InterviewQuestionDetailProps>) {
+  const queryClient = useQueryClient();
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editInitialValues, setEditInitialValues] = useState(null as null | Omit<InterviewQuestion, 'id' | 'author' | 'timestamp' | 'votes' | 'bookmarked' | 'views'>);
   const formatTimeAgo = (date: Date) => {
     const now = new Date();
     const diffInHours = Math.floor((now.getTime() - new Date(date).getTime()) / (1000 * 60 * 60));
@@ -52,6 +61,19 @@ export function InterviewQuestionDetail({
     return date.toLocaleDateString();
   };
 
+  const onEdit = () => {
+    setEditDialogOpen(true);
+    setEditInitialValues(question);
+  };
+  const editQuestionMutation = useMutation({
+    mutationFn: (data: { _id: string } & Omit<InterviewQuestion, 'id' | 'author' | 'timestamp' | 'votes' | 'bookmarked' | 'views'>) => questionsApi.editQuestion(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['questions'] });
+      queryClient.invalidateQueries({ queryKey: ['myQuestions'] });
+      return true;
+    },
+  });
+
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
       case 'easy': return 'bg-difficulty-easy/10 text-difficulty-easy border-difficulty-easy/20';
@@ -60,11 +82,14 @@ export function InterviewQuestionDetail({
       default: return 'bg-muted text-muted-foreground';
     }
   };
+  const handleAddOrEditQuestion = (data: Omit<InterviewQuestion, 'id' | 'author' | 'timestamp' | 'votes' | 'bookmarked' | 'views'> & { _id?: string }, questionId?: string) => {
+    editQuestionMutation.mutate({ ...data, _id: questionId });
 
+  };
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-6">
-        <div className="mb-6">
+        <div className="mb-6 flex items-center justify-between">
           <Button
             variant="ghost"
             onClick={onBack}
@@ -73,6 +98,16 @@ export function InterviewQuestionDetail({
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Questions
           </Button>
+          {userId == question.author &&
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onEdit}
+              className="hover:bg-secondary hover:text-foreground flex items-center gap-2"
+            >
+              Edit <Edit className={`h-4 w-4`} />
+            </Button>
+          }
         </div>
 
         <div className="max-w-4xl mx-auto">
@@ -130,7 +165,7 @@ export function InterviewQuestionDetail({
                     variant="ghost"
                     size="sm"
                     onClick={() => onVote(question._id, 'up')}
-                    className="h-7 w-7 p-0 hover:bg-success/10 hover:text-success transition-colors"
+                    className={`h-7 w-7 p-0 hover:bg-success/20 hover:text-success transition-colors ${question.myVote === 'up' ? 'bg-success/10 text-success ' : ''}`}
                   >
                     <ArrowUp className="h-4 w-4" />
                   </Button>
@@ -141,7 +176,7 @@ export function InterviewQuestionDetail({
                     variant="ghost"
                     size="sm"
                     onClick={() => onVote(question._id, 'down')}
-                    className="h-7 w-7 p-0 hover:bg-destructive/10 hover:text-destructive transition-colors"
+                    className={`h-7 w-7 p-0 hover:bg-destructive/20 hover:text-destructive transition-colors ${question.myVote === 'down' ? 'bg-destructive/10 text-destructive' : ''}`}
                   >
                     <ArrowDown className="h-4 w-4" />
                   </Button>
@@ -182,6 +217,22 @@ export function InterviewQuestionDetail({
           </Card>
         </div>
       </div>
+      {editDialogOpen && (
+        <AddInterviewQuestionDialog
+          onAddQuestion={(data) => {
+            handleAddOrEditQuestion(data, editInitialValues?._id);
+            setEditDialogOpen(false);
+            setEditInitialValues(null);
+            return true;
+          }}
+          initialValues={editInitialValues}
+          open={editDialogOpen}
+          setOpen={(v) => {
+            setEditDialogOpen(v);
+            if (!v) setEditInitialValues(null);
+          }}
+        />
+      )}
     </div>
   );
 }

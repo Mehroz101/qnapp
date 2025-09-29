@@ -6,11 +6,29 @@ export const qnaService = {
   async createQuestion(data: any) {
     return await (Question as any).create(data);
   },
-  async listQuestions(req: Request) {
-    // if(!req.user.id){
-    return await (Question as any).find().sort({ createdAt: -1 }).limit(100);
-    // }
-    // const response =  await (Question as any).find().sort({ createdAt: -1 }).limit(100);
+  async listQuestions(userId?: string) {
+    if (!userId) {
+      return await (Question as any).find().sort({ createdAt: -1 }).limit(100);
+    }
+    const response = await (Question as any).find().sort({ createdAt: -1 }).limit(100);
+    const user = await (User as any).findById(userId);
+    if (!user) { return response; }
+    return response.map((q: any) => {
+      const qidStr = q._id.toString();
+      let myVote: 'up' | 'down' | null;
+      if (user.upvoted.map((id: any) => id.toString()).includes(qidStr)) {
+        myVote = 'up';
+      } else if (user.downvoted.map((id: any) => id.toString()).includes(qidStr)) {
+        myVote = 'down';
+      } else {
+        myVote = null;
+      }
+      return {
+        ...q.toObject(),
+        myVote,
+        bookmarked: user.bookmarks.map((id: any) => id.toString()).includes(qidStr),
+      };
+    });
   },
   async getQuestionDetail(id: string) {
     return await (Question as any).findById(id);
@@ -18,9 +36,7 @@ export const qnaService = {
   async updateQuestion(id: string, userId: string, body: any) {
     const q = await (Question as any).findOne({ _id: id, author: userId });
     if (!q) return null;
-    if (body.title) q.title = body.title;
-    if (body.description) q.description = body.description;
-    if (body.tags) q.tags = body.tags;
+    Object.assign(q, body);
     await q.save();
     return q;
   },
@@ -37,14 +53,10 @@ export const qnaService = {
   async upvote(id: string, userId: string) {
     console.log('Upvoting question', id, 'by user', userId);
     const q = await (Question as any).findById(id);
-    if (!q) return null;
+    if (!q) { return null; }
     const user = await User.findById(userId);
-    if (!user) return null;
+    if (!user) { return null; }
     const qidStr = q._id.toString();
-    console.log("==============================")
-    console.log("question", q)
-    console.log("user", user)
-    console.log("==============================")
     const upvotedIds = user.upvoted.map((id: any) => id.toString());
     const downvotedIds = user.downvoted.map((id: any) => id.toString());
     const alreadyUp = upvotedIds.includes(qidStr);
@@ -67,11 +79,10 @@ export const qnaService = {
     return { votes: q.votes };
   },
   async downvote(id: string, userId: string) {
-    console.log('Downvoting question', id, 'by user', userId);
     const q = await (Question as any).findById(id);
-    if (!q) return null;
+    if (!q) { return null; }
     const user = await (User as any).findById(userId);
-    if (!user) return null;
+    if (!user) { return null; }
     const qidStr = q._id.toString();
     const downvotedIds = user.downvoted.map((id: any) => id.toString());
     const upvotedIds = user.upvoted.map((id: any) => id.toString());
@@ -95,7 +106,7 @@ export const qnaService = {
   },
   async bookmark(id: string, userId: string) {
     const user = await (User as any).findById(userId);
-    if (!user) return null;
+    if (!user) { return null; }
     const qid = id;
     const bookmarkIds = user.bookmarks.map((id: any) => id.toString());
     const has = bookmarkIds.includes(String(qid));
@@ -112,17 +123,17 @@ export const qnaService = {
   },
   async myUpvoted(userId: string) {
     const user = await (User as any).findById(userId);
-    if (!user) return [];
+    if (!user) { return []; }
     return await (Question as any).find({ _id: { $in: user.upvoted } });
   },
   async myDownvoted(userId: string) {
     const user = await (User as any).findById(userId);
-    if (!user) return [];
+    if (!user) { return []; }
     return await (Question as any).find({ _id: { $in: user.downvoted } });
   },
   async myBookmarks(userId: string) {
     const user = await (User as any).findById(userId);
-    if (!user) return [];
+    if (!user) { return []; }
     return await (Question as any).find({ _id: { $in: user.bookmarks } });
   }
 };

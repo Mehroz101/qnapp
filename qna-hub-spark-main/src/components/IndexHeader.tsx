@@ -1,4 +1,4 @@
-import { AddInterviewQuestionDialog } from './AddInterviewQuestionDialog';
+import  AddInterviewQuestionDialog  from './AddInterviewQuestionDialog';
 
 interface IndexHeaderProps {
   readonly onAddQuestion: (data: unknown) => boolean;

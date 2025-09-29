@@ -5,10 +5,12 @@ import { InterviewQuestion } from '../types';
 import { useEffect, useState } from 'react';
 import { Button } from '../components/ui/button';
 import { InterviewQuestionDetail } from '@/components/InterviewQuestionDetail';
+import AddInterviewQuestionDialog from '../components/AddInterviewQuestionDialog';
 
 export default function Profile() {
   const queryClient = useQueryClient();
   const [selectedQuestionId, setSelectedQuestionId] = useState<string | null>(null);
+
 
   const { data: user, isLoading: loadingUser } = useQuery({
     queryKey: ['profile'],
@@ -20,38 +22,36 @@ export default function Profile() {
   // Upvote mutation
   const upvoteMutation = useMutation({
     mutationFn: questionsApi.upvote,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['questions'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['myQuestions'] });
+      queryClient.invalidateQueries({ queryKey: ['questions'] });
+    },
   });
 
   // Downvote mutation
   const downvoteMutation = useMutation({
     mutationFn: questionsApi.downvote,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['questions'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['myQuestions'] });
+      queryClient.invalidateQueries({ queryKey: ['questions'] });
+    },
   });
 
   // Bookmark mutation
   const bookmarkMutation = useMutation({
     mutationFn: questionsApi.bookmark,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['questions'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['myQuestions'] });
+      queryClient.invalidateQueries({ queryKey: ['questions'] });
+    },
   });
 
-  const [questions, setQuestions] = useState<InterviewQuestion[]>([]);
-  const [loadingQuestions, setLoadingQuestions] = useState(true);
+  const { data: questions, isLoading: loadingQuestions } = useQuery({
+    queryKey: ['myQuestions'],
+    queryFn: userApi.getMyQuestions,
+  });
 
-  useEffect(() => {
-    async function fetchQuestions() {
-      setLoadingQuestions(true);
-      try {
-        const qList = await userApi.getMyQuestions();
-        setQuestions(qList);
-      } catch {
-        setQuestions([]);
-      } finally {
-        setLoadingQuestions(false);
-      }
-    }
-    fetchQuestions();
-  }, []);
+
   const handleVote = (questionId: string, direction: 'up' | 'down') => {
     if (!isAuthenticated) { return };
     if (direction === 'up') {
@@ -77,6 +77,7 @@ export default function Profile() {
         onVote={handleVote}
         onBookmark={handleBookmark}
         onBack={() => setSelectedQuestionId(null)}
+        userId={user?.data?.id}
       />
     );
   }
@@ -98,7 +99,6 @@ export default function Profile() {
           <div className="space-y-4">
             {questions.map((question: InterviewQuestion) => (
               <QuestionCard
-                key={question._id}
                 question={question}
                 onVote={handleVote}
                 onBookmark={handleBookmark}
@@ -108,6 +108,7 @@ export default function Profile() {
           </div>
         )}
       </div>
+
     </div>
   );
 }
