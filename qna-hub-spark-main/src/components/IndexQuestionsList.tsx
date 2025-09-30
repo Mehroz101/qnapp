@@ -10,6 +10,7 @@ type IndexQuestionsListProps = Readonly<{
   setSelectedQuestionId: (id: string) => void;
   generateWithAI: () => void;
   setQuestions: React.Dispatch<React.SetStateAction<InterviewQuestion[]>>;
+  AIThinking?: any;
 }>;
 
 function incrementQuestionViews(id: string, setQuestions: React.Dispatch<React.SetStateAction<InterviewQuestion[]>>) {
@@ -25,7 +26,8 @@ export function IndexQuestionsList({
   handleClearFilters,
   setSelectedQuestionId,
   setQuestions,
-  generateWithAI
+  generateWithAI,
+  AIThinking,
 }: IndexQuestionsListProps) {
   const handleQuestionClick = (id: string) => {
     setSelectedQuestionId(id);
@@ -44,10 +46,10 @@ export function IndexQuestionsList({
             <Button
               variant="outline"
               onClick={generateWithAI}
-              className='bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 hover:text-white mb-4 flex items-center justify-center'
+              className={`bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 hover:text-white mb-4 flex items-center justify-center ${AIThinking.isPending ? 'cursor-not-allowed' : ''}`}
             >
-              <img src="/ai-Btn.png" alt="" className='w-4 h-4 mr-2 ' />
-              Ask From Qwizzy
+              <img src={`/ai-Btn.png`} alt="" className={`w-4 h-4 mr-2 ${AIThinking.isPending ? 'animate-spin' : ''}`} />
+              {AIThinking.isError ? "Sorry, something went wrong. Try again." : AIThinking.isPending ? 'Thinking...' : 'Generate with AI'}
             </Button>
             <Button
               variant="outline"

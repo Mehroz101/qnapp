@@ -57,30 +57,33 @@ function extractFirstJSON(text: string): string | null {
  */
 export async function generateWithAI(prompt: string, userId: string): Promise<IQuestion> {
   const model = process.env.GEMINI_MODEL ?? 'gemini-2.5-flash'; // choose your model
-  const systemInstruction = `
-Regenerate the user's interview question in a clean professional way.
-Return JSON with this structure:
-
-{
-  "question": string,
-  "answer": string,  // Markdown format, concise, max 10-12 lines
-  "category": string,
-  "difficulty": "easy" | "medium" | "hard",
-  "interviewType": "technical" | "behavioral" | "system-design" | "coding" | "case-study"
-}
-
-Rules:
-- Do NOT explain the question again in the answer.
-- Keep "answer" short, clear, and to the point (10–12 lines max).
-- Use markdown lists, bold, and code blocks where useful. For code blocks use three backticks with the language of your choice in the start of the code block and at the end of the code block.
-- Return only valid JSON.`;
+  const systemInstruction = "Regenerate the user's interview question in a clean, professional way. \
+Return ONLY valid JSON with this structure:\n\n\
+{\n\
+  \"question\": string,\n\
+  \"answer\": string,  // Markdown format, concise, max 10–12 lines\n\
+  \"category\": string,\n\
+  \"difficulty\": \"easy\" | \"medium\" | \"hard\",\n\
+  \"interviewType\": \"technical\" | \"behavioral\" | \"system-design\" | \"coding\" | \"case-study\"\n\
+}\n\n\
+STRICT RULES:\n\
+- Do NOT explain or restate the question in the answer.\n\
+- The \"answer\" must be concise, 10–12 lines maximum.\n\
+- Use proper Markdown formatting:\n\
+  * Use **bold** and lists (-, *) for clarity.\n\
+  * Use code blocks with exact syntax:\n\
+    - Wrap code with three backticks (```).\n\
+    - Language tags MUST be valid: \"js\" or \"jsx\" (not \"javascript\").\n\
+    - Always close code blocks with three backticks.\n\
+- Do NOT add extra commentary outside the JSON.\n\
+- Output must be pure JSON, no prose before or after.";
 
   const contents = [
     {
       role: 'user',
       parts: [
         {
-          text: `${systemInstruction}\nUser prompt:\n${prompt}\n\nRespond with the JSON object now:`,
+          text: `${systemInstruction} \nUser prompt: \n${prompt} \n\nRespond with the JSON object now: `,
         },
       ],
     },
@@ -135,7 +138,7 @@ Rules:
 
   // minimal sanity checks
   if (!result.question) {
-    result.question = `AI generated question (based on prompt): ${String(prompt).slice(0, 200)}`;
+    result.question = `AI generated question(based on prompt): ${String(prompt).slice(0, 200)} `;
   }
   if (!result.answer) {
     result.answer = 'Answer not provided by AI.';

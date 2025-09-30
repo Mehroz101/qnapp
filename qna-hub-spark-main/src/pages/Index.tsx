@@ -190,6 +190,7 @@ const Index = () => {
                 setSelectedQuestionId={setSelectedQuestionId}
                 setQuestions={() => { }}
                 generateWithAI={handleGenerateWithAI}
+                AIThinking={generateWithAIMutation}
               />
             )}
           </div>

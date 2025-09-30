@@ -1,2 +1,3 @@
 qna-hub-spark-main/node_modules/
 server/node_modules/
+.env  
