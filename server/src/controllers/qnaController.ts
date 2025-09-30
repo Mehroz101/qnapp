@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { qnaService } from '../services/qnaService.js';
 import { z } from 'zod';
+import { generateWithAI } from '../services/aiService.js';
 
 const createQuestionSchema = z.object({
   question: z.string().min(3),
@@ -103,5 +104,17 @@ export const qnaController = {
     const userId = (req as any).auth.userId;
     const list = await qnaService.myBookmarks(userId);
     res.json(list);
+  },
+  async generateWithAI(req: Request, res: Response) {
+    const userId = (req as any).auth.userId;
+    console.log("prompt received:", req.body.prompt);
+    const prompt = req.body.prompt as string || 'Generate a random interview question';
+    try {
+      const generatedQuestion = await generateWithAI(prompt, userId);
+      return res.json({ ok: true, question: generatedQuestion });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to generate question' });
+    }
   }
-};
+
+}

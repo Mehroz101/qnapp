@@ -18,5 +18,6 @@ router.get('/me/questions', authRequired, qnaController.myQuestions);
 router.get('/me/upvoted', authRequired, qnaController.myUpvoted);
 router.get('/me/downvoted', authRequired, qnaController.myDownvoted);
 router.get('/me/bookmarks', authRequired, qnaController.myBookmarks);
+router.post('/generate', authRequired, qnaController.generateWithAI);
 
 export default router;

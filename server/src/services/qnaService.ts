@@ -135,5 +135,10 @@ export const qnaService = {
     const user = await (User as any).findById(userId);
     if (!user) { return []; }
     return await (Question as any).find({ _id: { $in: user.bookmarks } });
+  },
+  async generateWithAI(prompt: string, userId: string) {
+    // Placeholder implementation - replace with actual AI integration
+    const generatedQuestionText = `AI Generated Question based on prompt: ${prompt}`;
+
   }
-};
+}

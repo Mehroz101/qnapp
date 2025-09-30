@@ -8,6 +8,7 @@ type IndexQuestionsListProps = Readonly<{
   handleBookmark: (id: string) => void;
   handleClearFilters: () => void;
   setSelectedQuestionId: (id: string) => void;
+  generateWithAI: () => void;
   setQuestions: React.Dispatch<React.SetStateAction<InterviewQuestion[]>>;
 }>;
 
@@ -24,6 +25,7 @@ export function IndexQuestionsList({
   handleClearFilters,
   setSelectedQuestionId,
   setQuestions,
+  generateWithAI
 }: IndexQuestionsListProps) {
   const handleQuestionClick = (id: string) => {
     setSelectedQuestionId(id);
@@ -37,13 +39,25 @@ export function IndexQuestionsList({
           <p className="text-muted-foreground text-lg mb-4">
             No questions found matching your criteria
           </p>
-          <Button
-            variant="outline"
-            onClick={handleClearFilters}
-            className="mb-4"
-          >
-            Clear Filters
-          </Button>
+          <div className='flex flex-col gap-2 items-center justify-center'>
+
+            <Button
+              variant="outline"
+              onClick={generateWithAI}
+              className='bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 hover:text-white mb-4 flex items-center justify-center'
+            >
+              <img src="/ai-Btn.png" alt="" className='w-4 h-4 mr-2 ' />
+              Ask From Qwizzy
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleClearFilters}
+              className="mb-4"
+            >
+              Clear Filters
+            </Button>
+          </div>
+
         </div>
       ) : (
         <div className="space-y-4">

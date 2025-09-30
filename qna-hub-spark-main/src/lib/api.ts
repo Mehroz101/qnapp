@@ -51,4 +51,7 @@ export const questionsApi = {
     // Sends a PUT request to update a question by _id
     return (await axiosClient.put(`/qna/${data._id}`, data)).data;
   },
+  async generateWithAI(prompt: string) {
+    return (await axiosClient.post('/qna/generate', { prompt })).data;
+  }
 };

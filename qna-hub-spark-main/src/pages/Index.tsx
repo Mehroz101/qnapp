@@ -19,6 +19,8 @@ const Index = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [availableCategories, setAvailableCategories] = useState<string[]>([]);
   const [debouncedSearch] = useDebounce(searchQuery, 600);
+  const [initialValues, setInitialValues] = useState<Partial<InterviewQuestion> | null>({});
+  const [open, setOpen] = useState(false);
 
   // Auth state
   const { data: user, isLoading: loadingUser } = useQuery({
@@ -77,6 +79,15 @@ const Index = () => {
   const bookmarkMutation = useMutation({
     mutationFn: questionsApi.bookmark,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['questions'] }),
+  });
+  const generateWithAIMutation = useMutation({
+    mutationFn: questionsApi.generateWithAI,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['questions'] });
+      console.log("AI generated question:", data);
+      setInitialValues(data.question);
+      setOpen(true)
+    },
   });
 
 
@@ -139,12 +150,15 @@ const Index = () => {
       />
     );
   }
-
+  const handleGenerateWithAI = () => {
+    // Placeholder for AI generation logic
+    generateWithAIMutation.mutate(searchQuery);
+  }
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-6">
         <div className="mb-8">
-          <IndexHeader onAddQuestion={handleAddQuestion} />
+          <IndexHeader onAddQuestion={handleAddQuestion} initialValues={initialValues} open={open} setOpen={setOpen} />
           <IndexSearchSortBar
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
@@ -175,6 +189,7 @@ const Index = () => {
                 handleClearFilters={handleClearFilters}
                 setSelectedQuestionId={setSelectedQuestionId}
                 setQuestions={() => { }}
+                generateWithAI={handleGenerateWithAI}
               />
             )}
           </div>

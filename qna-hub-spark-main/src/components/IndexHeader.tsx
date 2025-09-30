@@ -1,10 +1,13 @@
-import  AddInterviewQuestionDialog  from './AddInterviewQuestionDialog';
+import AddInterviewQuestionDialog from './AddInterviewQuestionDialog';
 
 interface IndexHeaderProps {
   readonly onAddQuestion: (data: unknown) => boolean;
+  readonly initialValues: unknown;
+  readonly open: boolean;
+  readonly setOpen: (open: boolean) => void;
 }
 
-export function IndexHeader({ onAddQuestion }: IndexHeaderProps) {
+export function IndexHeader({ onAddQuestion, initialValues, open, setOpen }: IndexHeaderProps) {
   return (
     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
       <div>
@@ -15,7 +18,7 @@ export function IndexHeader({ onAddQuestion }: IndexHeaderProps) {
           Real interview questions and answers from the community
         </p>
       </div>
-      <AddInterviewQuestionDialog onAddQuestion={onAddQuestion} />
+      <AddInterviewQuestionDialog onAddQuestion={onAddQuestion} initialValues={initialValues} open={open} setOpen={setOpen} />
     </div>
   );
 }

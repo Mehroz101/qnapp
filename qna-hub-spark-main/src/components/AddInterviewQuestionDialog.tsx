@@ -48,6 +48,7 @@ export default function AddInterviewQuestionDialog({
   const [category, setCategory] = useState(initialValues?.category || '');
   const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>(initialValues?.difficulty || 'medium');
 
+  
   // Reset form when initialValues or open changes
   useEffect(() => {
     if (open) {
