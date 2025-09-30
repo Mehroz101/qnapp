@@ -4,7 +4,7 @@ export const manifestForPlugIn = {
   manifest: {
     name: "Qwizzy",
     short_name: "Qwizzy",
-    description: "this is a question and answer app",
+    description: "this is a community for developer to ask question and get answer",
     icons: [
       {
         src: '/android-chrome-192x192.png',
