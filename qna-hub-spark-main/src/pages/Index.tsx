@@ -43,7 +43,7 @@ const Index = () => {
       categories: selectedCategories,
       sortBy,
     }),
-
+    retry: false,
   });
   useEffect(() => {
     if (searchQuery === '' && selectedCategories.length === 0) {
