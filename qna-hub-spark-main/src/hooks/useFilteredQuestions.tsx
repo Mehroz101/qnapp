@@ -14,7 +14,6 @@ export function useFilteredQuestions({
   selectedCategories,
   sortBy,
 }: UseFilteredQuestionsProps) {
-  console.log({ questions });
   return useMemo(() => {
     const filtered = questions?.filter((question) => {
       const searchMatch =

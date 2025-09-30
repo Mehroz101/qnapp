@@ -1,5 +1,5 @@
 // src/services/aiService.ts
-import { ai } from '../lib/geminiClient';
+import { ai } from '../lib/geminiClient.js';
 
 export interface IQuestion {
   question: string;
