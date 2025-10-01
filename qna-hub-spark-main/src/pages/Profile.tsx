@@ -1,64 +1,37 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { authApi, questionsApi, userApi } from '../lib/api';
+import { useQueryClient } from '@tanstack/react-query';
 import { QuestionCard } from '../components/QuestionCard';
 import { InterviewQuestion } from '../types';
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Button } from '../components/ui/button';
 import { InterviewQuestionDetail } from '@/components/InterviewQuestionDetail';
 import AddInterviewQuestionDialog from '../components/AddInterviewQuestionDialog';
-import { User, Mail, IdCard, RefreshCw, Plus, BookOpen, BarChart3, Calendar } from 'lucide-react';
+import { User, Mail, IdCard, Plus, BookOpen, BarChart3, Calendar } from 'lucide-react';
 import { Card } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { Skeleton } from '../components/ui/skeleton';
+import { useQuestions } from '@/hooks/useQuestions';
+import { useUserProfile } from '@/hooks/useProfile';
 
 export default function Profile() {
   const queryClient = useQueryClient();
   const [selectedQuestionId, setSelectedQuestionId] = useState<string | null>(null);
   const [showAddQuestionDialog, setShowAddQuestionDialog] = useState(false);
 
-  const { data: user, isLoading: loadingUser } = useQuery({
-    queryKey: ['profile'],
-    queryFn: authApi.getProfile,
-    retry: false,
-  });
+  const { user, loadingUser } = useUserProfile()
 
   const isAuthenticated = !!user?.data?.id;
-
-  // Upvote mutation
-  const upvoteMutation = useMutation({
-    mutationFn: questionsApi.upvote,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['myQuestions'] });
-      queryClient.invalidateQueries({ queryKey: ['questions'] });
-    },
-  });
-
-  // Downvote mutation
-  const downvoteMutation = useMutation({
-    mutationFn: questionsApi.downvote,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['myQuestions'] });
-      queryClient.invalidateQueries({ queryKey: ['questions'] });
-    },
-  });
-
-  // Bookmark mutation
-  const bookmarkMutation = useMutation({
-    mutationFn: questionsApi.bookmark,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['myQuestions'] });
-      queryClient.invalidateQueries({ queryKey: ['questions'] });
-    },
-  });
-
-  const { data: questions, isLoading: loadingQuestions } = useQuery({
-    queryKey: ['myQuestions'],
-    queryFn: userApi.getMyQuestions,
-  });
+  const {
+    questions,
+    isLoading,
+    upvoteMutation,
+    downvoteMutation,
+    bookmarkMutation,
+  } = useQuestions({});
 
   const handleVote = (questionId: string, direction: 'up' | 'down') => {
     if (!isAuthenticated) { return };
     if (direction === 'up') {
+
       upvoteMutation.mutate(questionId);
     } else {
       downvoteMutation.mutate(questionId);
@@ -76,8 +49,13 @@ export default function Profile() {
 
   // Calculate stats
   const totalQuestions = questions?.length || 0;
-  const totalVotes = questions?.reduce((sum: number, q: InterviewQuestion) => sum + (q.votes || 0), 0) || 0;
-  const totalViews = questions?.reduce((sum: number, q: InterviewQuestion) => sum + (q.views || 0), 0) || 0;
+  const totalVotes = useMemo(() => questions?.reduce((sum: number, q: InterviewQuestion) => sum + (q.votes || 0), 0) || 0, [questions]);
+  const totalViews = useMemo(() => questions?.reduce((sum: number, q: InterviewQuestion) => sum + (q.views || 0), 0) || 0, [questions]);
+
+
+
+
+
 
   if (loadingUser) {
     return (
@@ -227,53 +205,62 @@ export default function Profile() {
             </Badge>
           </div>
 
-          {loadingQuestions ? (
-            <div className="space-y-4">
-              {[1, 2, 3].map(i => (
-                <Card key={i} className="p-6 animate-pulse">
-                  <div className="flex gap-4">
-                    <div className="flex flex-col items-center gap-2 min-w-[50px]">
-                      <Skeleton className="h-7 w-7 rounded" />
-                      <Skeleton className="h-4 w-8 rounded" />
-                      <Skeleton className="h-7 w-7 rounded" />
-                    </div>
-                    <div className="flex-1 space-y-3">
-                      <Skeleton className="h-4 w-3/4 rounded" />
-                      <Skeleton className="h-4 w-full rounded" />
-                      <Skeleton className="h-4 w-2/3 rounded" />
-                    </div>
-                  </div>
+          {/* Extracted conditional rendering for questions section */}
+          {(() => {
+            if (isLoading) {
+              return (
+                <div className="space-y-4">
+                  {[1, 2, 3].map(i => (
+                    <Card key={i} className="p-6 animate-pulse">
+                      <div className="flex gap-4">
+                        <div className="flex flex-col items-center gap-2 min-w-[50px]">
+                          <Skeleton className="h-7 w-7 rounded" />
+                          <Skeleton className="h-4 w-8 rounded" />
+                          <Skeleton className="h-7 w-7 rounded" />
+                        </div>
+                        <div className="flex-1 space-y-3">
+                          <Skeleton className="h-4 w-3/4 rounded" />
+                          <Skeleton className="h-4 w-full rounded" />
+                          <Skeleton className="h-4 w-2/3 rounded" />
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              );
+            } else if (!questions || questions.length === 0) {
+              return (
+                <Card className="p-12 text-center border-2 border-dashed border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
+                  <BookOpen className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">No Questions Yet</h3>
+                  <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto">
+                    You haven't shared any interview questions yet. Start contributing to help others prepare for their interviews!
+                  </p>
+                  <Button
+                    onClick={() => setShowAddQuestionDialog(true)}
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Share Your First Question
+                  </Button>
                 </Card>
-              ))}
-            </div>
-          ) : !questions || questions.length === 0 ? (
-            <Card className="p-12 text-center border-2 border-dashed border-gray-300 dark:border-gray-700 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
-              <BookOpen className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">No Questions Yet</h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto">
-                You haven't shared any interview questions yet. Start contributing to help others prepare for their interviews!
-              </p>
-              <Button
-                onClick={() => setShowAddQuestionDialog(true)}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Share Your First Question
-              </Button>
-            </Card>
-          ) : (
-            <div className="space-y-4">
-              {questions.map((question: InterviewQuestion) => (
-                <QuestionCard
-                  key={question._id}
-                  question={question}
-                  onVote={handleVote}
-                  onBookmark={handleBookmark}
-                  onClick={setSelectedQuestionId}
-                />
-              ))}
-            </div>
-          )}
+              );
+            } else {
+              return (
+                <div className="space-y-4">
+                  {questions.map((question: InterviewQuestion) => (
+                    <QuestionCard
+                      key={question._id}
+                      question={question}
+                      onVote={handleVote}
+                      onBookmark={handleBookmark}
+                      onClick={setSelectedQuestionId}
+                    />
+                  ))}
+                </div>
+              );
+            }
+          })()}
         </div>
       </div>
 

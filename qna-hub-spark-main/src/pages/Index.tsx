@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { InterviewQuestion } from '../types';
 import { InterviewQuestionDetail } from '../components/InterviewQuestionDetail';
 import { useFilteredQuestions } from '../hooks/useFilteredQuestions';
@@ -6,9 +6,10 @@ import { IndexHeader } from '../components/IndexHeader';
 import { IndexSearchSortBar } from '../components/IndexSearchSortBar';
 import { IndexSidebarFilters } from '../components/IndexSidebarFilters';
 import { IndexQuestionsList } from '../components/IndexQuestionsList';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { questionsApi, authApi } from '../lib/api';
-import { useDebounce } from 'use-debounce'; // or write a small hook
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { questionsApi } from '../lib/api';
+import { useUserProfile } from '@/hooks/useProfile';
+import { useQuestions } from '@/hooks/useQuestions';
 
 const Index = () => {
   const queryClient = useQueryClient();
@@ -18,32 +19,19 @@ const Index = () => {
   const [sortBy, setSortBy] = useState<'newest' | 'votes' | 'company'>('newest');
   const [showFilters, setShowFilters] = useState(false);
   const [availableCategories, setAvailableCategories] = useState<string[]>([]);
-  const [debouncedSearch] = useDebounce(searchQuery, 600);
   const [initialValues, setInitialValues] = useState<Partial<InterviewQuestion> | null>({});
   const [open, setOpen] = useState(false);
 
   // Auth state
-  const { data: user, isLoading: loadingUser } = useQuery({
-    queryKey: ['profile'],
-    queryFn: authApi.getProfile,
-    retry: false,
-  });
+  const { user } = useUserProfile()
   const isAuthenticated = !!user?.data?.id;
 
-  // Questions list
-  const {
-    data: questions = [],
-    isLoading,
-    isError,
-    error,
-  } = useQuery({
-    queryKey: ['questions', { searchQuery: debouncedSearch, selectedCategories, sortBy }],
-    queryFn: () => questionsApi.list({
-      search: debouncedSearch,
-      categories: selectedCategories,
-      sortBy,
-    }),
-    retry: false,
+
+
+  const { allQuestions: questions, allIsLoading: isLoading, allIsError: isError, allError: error, addQuestionMutation, upvoteMutation, downvoteMutation, bookmarkMutation } = useQuestions({
+    searchQuery,
+    selectedCategories,
+    sortBy,
   });
   useEffect(() => {
     if (searchQuery === '' && selectedCategories.length === 0) {
@@ -51,35 +39,14 @@ const Index = () => {
       questions.forEach((question: InterviewQuestion) => {
         categorySet.add(question.category);
       });
-      setAvailableCategories(Array.from(categorySet).sort((a, b) => a.localeCompare(b)));
+      const newCategories = Array.from(categorySet).sort((a, b) => a.localeCompare(b));
+      if (JSON.stringify(newCategories) !== JSON.stringify(availableCategories)) {
+        setAvailableCategories(newCategories);
+      }
     }
-  }, [questions]);
-  // Add question mutation
-  const addQuestionMutation = useMutation({
-    mutationFn: questionsApi.addQuestion,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['questions'] })
-      return true;
-    },
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [questions, searchQuery, selectedCategories]);
 
-  // Upvote mutation
-  const upvoteMutation = useMutation({
-    mutationFn: questionsApi.upvote,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['questions'] }),
-  });
-
-  // Downvote mutation
-  const downvoteMutation = useMutation({
-    mutationFn: questionsApi.downvote,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['questions'] }),
-  });
-
-  // Bookmark mutation
-  const bookmarkMutation = useMutation({
-    mutationFn: questionsApi.bookmark,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['questions'] }),
-  });
   const generateWithAIMutation = useMutation({
     mutationFn: questionsApi.generateWithAI,
     onSuccess: (data) => {
