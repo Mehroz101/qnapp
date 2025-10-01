@@ -119,7 +119,28 @@ export const qnaService = {
     return { bookmarks: user.bookmarks };
   },
   async myQuestions(userId: string) {
-    return await (Question as any).find({ author: userId }).sort({ createdAt: -1 });
+    if (!userId) {
+      return await (Question as any).find({ author: userId }).sort({ createdAt: -1 }).limit(100);
+    }
+    const response = await (Question as any).find().sort({ createdAt: -1 }).limit(100);
+    const user = await (User as any).findById(userId);
+    if (!user) { return response; }
+    return response.map((q: any) => {
+      const qidStr = q._id.toString();
+      let myVote: 'up' | 'down' | null;
+      if (user.upvoted.map((id: any) => id.toString()).includes(qidStr)) {
+        myVote = 'up';
+      } else if (user.downvoted.map((id: any) => id.toString()).includes(qidStr)) {
+        myVote = 'down';
+      } else {
+        myVote = null;
+      }
+      return {
+        ...q.toObject(),
+        myVote,
+        bookmarked: user.bookmarks.map((id: any) => id.toString()).includes(qidStr),
+      };
+    });
   },
   async myUpvoted(userId: string) {
     const user = await (User as any).findById(userId);
@@ -136,9 +157,5 @@ export const qnaService = {
     if (!user) { return []; }
     return await (Question as any).find({ _id: { $in: user.bookmarks } });
   },
-  async generateWithAI(prompt: string, userId: string) {
-    // Placeholder implementation - replace with actual AI integration
-    const generatedQuestionText = `AI Generated Question based on prompt: ${prompt}`;
 
-  }
 }

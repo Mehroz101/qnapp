@@ -15,42 +15,39 @@ export interface IQuestion {
  * Returns null if none found.
  */
 function extractFirstJSON(text: string): string | null {
-  // remove markdown code fences first
-  const cleaned = text.replace(/```(?:json)?\n?([\s\S]*?)```/g, (_m, g1) => g1).trim();
+  // Only remove outer ``` wrapping the whole JSON object
+  const outerMatch = text.match(/^\s*```(?:json|js)?\s*([\s\S]*?)\s*```\s*$/);
+  const cleaned: any = outerMatch ? outerMatch[1] : text;
 
-  // try direct parse first
   try {
     JSON.parse(cleaned);
     return cleaned;
   } catch {
-    // not pure JSON; try to locate first {...} or [...]
-  }
-
-  // find first '{' or '[' and match braces
-  const startIdx = Math.max(cleaned.indexOf('{'), cleaned.indexOf('['));
-  if (startIdx === -1) return null;
-
-  const openChar = cleaned[startIdx];
-  const closeChar = openChar === '{' ? '}' : ']';
-
-  let depth = 0;
-  for (let i = startIdx; i < cleaned.length; i++) {
-    if (cleaned[i] === openChar) depth++;
-    if (cleaned[i] === closeChar) {
-      depth--;
-      if (depth === 0) {
-        const candidate = cleaned.slice(startIdx, i + 1);
-        try {
-          JSON.parse(candidate);
-          return candidate;
-        } catch {
-          return null;
+    // fallback: try to locate first {...} or [...]
+    const startIdx = Math.max(cleaned.indexOf('{'), cleaned.indexOf('['));
+    if (startIdx === -1) return null;
+    let depth = 0;
+    const openChar = cleaned[startIdx];
+    const closeChar = openChar === '{' ? '}' : ']';
+    for (let i = startIdx; i < cleaned.length; i++) {
+      if (cleaned[i] === openChar) depth++;
+      if (cleaned[i] === closeChar) {
+        depth--;
+        if (depth === 0) {
+          const candidate = cleaned.slice(startIdx, i + 1);
+          try {
+            JSON.parse(candidate);
+            return candidate;
+          } catch {
+            return null;
+          }
         }
       }
     }
+    return null;
   }
-  return null;
 }
+
 
 /**
  * The main function to call from your server: it asks Gemini to produce a single JSON object.
@@ -75,8 +72,7 @@ STRICT RULES:\n\
     - Wrap code with three backticks (```).\n\
     - Language tags MUST be valid: \"js\" or \"jsx\" (not \"javascript\").\n\
     - Always close code blocks with three backticks.\n\
-- Do NOT add extra commentary outside the JSON.\n\
-- Output must be pure JSON, no prose before or after.";
+- Do NOT add extra commentary outside the JSON.\n";
 
   const contents = [
     {

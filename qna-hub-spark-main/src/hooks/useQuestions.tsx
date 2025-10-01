@@ -40,21 +40,36 @@ export function useQuestions({ searchQuery, selectedCategories, sortBy }: Partia
 
   const upvoteMutation = useMutation({
     mutationFn: questionsApi.upvote,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['myQuestions'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['myQuestions'] })
+      queryClient.invalidateQueries({ queryKey: ['questions'] })
+
+    },
   });
 
   const downvoteMutation = useMutation({
     mutationFn: questionsApi.downvote,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['myQuestions'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['myQuestions'] })
+      queryClient.invalidateQueries({ queryKey: ['questions'] })
+
+    },
   });
 
   const bookmarkMutation = useMutation({
     mutationFn: questionsApi.bookmark,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['myQuestions'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['myQuestions'] })
+      queryClient.invalidateQueries({ queryKey: ['questions'] })
+
+    },
   });
   const addQuestionMutation = useMutation({
     mutationFn: questionsApi.addQuestion,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['questions'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['questions'] })
+      queryClient.invalidateQueries({ queryKey: ['myQuestions'] })
+    },
   });
 
   return {

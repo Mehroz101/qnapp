@@ -90,6 +90,7 @@ const Index = () => {
       return false;
     }
     addQuestionMutation.mutate(newQuestionData);
+    setSearchQuery('');
     return true;
   };
 
