@@ -1,4 +1,3 @@
-import { Request } from 'express';
 import { Question } from '../models/Question.js';
 import { User } from '../models/User.js';
 
@@ -8,9 +7,9 @@ export const qnaService = {
   },
   async listQuestions(userId?: string) {
     if (!userId) {
-      return await (Question as any).find().sort({ createdAt: -1 }).limit(100);
+      return await (Question as any).find().sort({ createdAt: -1 }).limit(100).populate('author', 'username');
     }
-    const response = await (Question as any).find().sort({ createdAt: -1 }).limit(100);
+    const response = await (Question as any).find().sort({ createdAt: -1 }).limit(100).populate('author', 'username');
     const user = await (User as any).findById(userId);
     if (!user) { return response; }
     return response.map((q: any) => {
@@ -120,9 +119,9 @@ export const qnaService = {
   },
   async myQuestions(userId: string) {
     if (!userId) {
-      return await (Question as any).find({ author: userId }).sort({ createdAt: -1 }).limit(100);
+      return await (Question as any).find({ author: userId }).sort({ createdAt: -1 }).limit(100).populate('author', 'username');
     }
-    const response = await (Question as any).find().sort({ createdAt: -1 }).limit(100);
+    const response = await (Question as any).find().sort({ createdAt: -1 }).limit(100).populate('author', 'username');
     const user = await (User as any).findById(userId);
     if (!user) { return response; }
     return response.map((q: any) => {
@@ -157,5 +156,20 @@ export const qnaService = {
     if (!user) { return []; }
     return await (Question as any).find({ _id: { $in: user.bookmarks } });
   },
+  async viewQuestion({ questionId }: { questionId: string }) {
+    try {
+      console.log('Viewing question', questionId);
+      const q = await (Question as any).findById(questionId);
+      if (!q) { return null; }
+      q.views += 1;
+      await q.save();
+      return q;
+    } catch (error) {
+      console.error("Error in viewQuestion:", error);
+      return null;
+    }
+
+
+  }
 
 }

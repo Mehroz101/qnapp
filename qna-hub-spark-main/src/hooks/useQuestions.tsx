@@ -55,6 +55,14 @@ export function useQuestions({ searchQuery, selectedCategories, sortBy }: Partia
 
     },
   });
+  const viewQuestionMutation = useMutation({
+    mutationFn: questionsApi.viewQuestion,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['myQuestions'] })
+      queryClient.invalidateQueries({ queryKey: ['questions'] })
+
+    },
+  });
 
   const bookmarkMutation = useMutation({
     mutationFn: questionsApi.bookmark,
@@ -84,6 +92,7 @@ export function useQuestions({ searchQuery, selectedCategories, sortBy }: Partia
     upvoteMutation,
     downvoteMutation,
     bookmarkMutation,
-    addQuestionMutation
+    addQuestionMutation,
+    viewQuestionMutation
   };
 }

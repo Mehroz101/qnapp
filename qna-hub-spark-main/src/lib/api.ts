@@ -53,5 +53,8 @@ export const questionsApi = {
   },
   async generateWithAI(prompt: string) {
     return (await axiosClient.post('/qna/generate', { prompt })).data;
-  }
+  },
+  async viewQuestion(id: string) {
+    return (await axiosClient.post(`/qna/view`, { questionId: id })).data;
+  },
 };

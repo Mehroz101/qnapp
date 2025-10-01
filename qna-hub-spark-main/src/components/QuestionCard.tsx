@@ -169,7 +169,7 @@ export function QuestionCard({ question, onVote, onBookmark, onClick }: Readonly
 
 
               <span className="text-gray-600 dark:text-gray-300 font-medium max-w-xs truncate">
-                by {question.author.replace(/[#*`]/g, '').substring(0, 10)}...
+                by {question.author.username.replace(/[#*`]/g, '').substring(0, 10)}...
               </span>
             </div>
 

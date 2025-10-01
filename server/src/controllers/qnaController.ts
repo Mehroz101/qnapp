@@ -105,6 +105,11 @@ export const qnaController = {
     const list = await qnaService.myBookmarks(userId);
     res.json(list);
   },
+  async viewQuestion(req: Request, res: Response) {
+    const question = await qnaService.viewQuestion(req.body ?? '');
+    if (!question) return res.status(404).json({ error: 'Not found' });
+    res.json(question);
+  },
   async generateWithAI(req: Request, res: Response) {
     const userId = (req as any).auth.userId;
     console.log("prompt received:", req.body.prompt);

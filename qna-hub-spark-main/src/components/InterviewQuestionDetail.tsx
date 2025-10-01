@@ -10,8 +10,9 @@ import ReactMarkdown from 'react-markdown'
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { questionsApi } from '@/lib/api';
 import AddInterviewQuestionDialog from './AddInterviewQuestionDialog';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { cn } from '../lib/utils';
+import { useQuestions } from '@/hooks/useQuestions';
 
 interface InterviewQuestionDetailProps {
   question: InterviewQuestion;
@@ -59,7 +60,7 @@ export function InterviewQuestionDetail({
   const queryClient = useQueryClient();
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editInitialValues, setEditInitialValues] = useState(null as null | Omit<InterviewQuestion, 'id' | 'author' | 'timestamp' | 'votes' | 'bookmarked' | 'views'>);
-
+  const { viewQuestionMutation } = useQuestions({})
   const formatTimeAgo = (date: Date) => {
     const now = new Date();
     const diffInHours = Math.floor((now.getTime() - new Date(date).getTime()) / (1000 * 60 * 60));
@@ -73,7 +74,11 @@ export function InterviewQuestionDetail({
       day: 'numeric'
     });
   };
-
+  useEffect(() => {
+    // Scroll to top when question changes
+    window.scrollTo(0, 0);
+    viewQuestionMutation.mutate(question._id);
+  }, [question._id]);
   const onEdit = () => {
     setEditDialogOpen(true);
     setEditInitialValues(question);
@@ -147,7 +152,7 @@ export function InterviewQuestionDetail({
           </Button>
 
           <div className="flex items-center gap-3">
-            {userId == question.author && (
+            {userId == question.author._id && (
               <Button
                 variant="outline"
                 size="sm"
@@ -336,7 +341,7 @@ export function InterviewQuestionDetail({
 
                   <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                     <User className="h-4 w-4" />
-                    <span className="font-medium">shared by {question.author.replace(/[#*`]/g, '').substring(0, 20)}...</span>
+                    <span className="font-medium">shared by {question.author.username.replace(/[#*`]/g, '').substring(0, 20)}...</span>
                   </div>
                 </div>
 

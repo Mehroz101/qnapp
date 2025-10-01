@@ -10,6 +10,7 @@ router.get('/', authOptional, qnaController.listQuestions);
 router.get('/:id', authOptional, qnaController.getQuestionDetail);
 router.put('/:id', authRequired, qnaController.updateQuestion);
 router.delete('/:id', authRequired, qnaController.deleteQuestion);
+router.post('/view', qnaController.viewQuestion);
 router.post('/:id/answers', authRequired, qnaController.answerQuestion);
 router.post('/:id/upvote', authRequired, qnaController.upvote);
 router.post('/:id/downvote', authRequired, qnaController.downvote);
