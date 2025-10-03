@@ -77,7 +77,25 @@ export function useQuestions({ searchQuery, selectedCategories, sortBy }: Partia
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['questions'] })
       queryClient.invalidateQueries({ queryKey: ['myQuestions'] })
+      queryClient.invalidateQueries({ queryKey: ['categories'] })
+
     },
+  });
+  const editQuestionMutation = useMutation({
+    mutationFn: (data: { _id: string } & Omit<InterviewQuestion, 'id' | 'author' | 'timestamp' | 'votes' | 'bookmarked' | 'views'>) => questionsApi.editQuestion(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['questions'] });
+      queryClient.invalidateQueries({ queryKey: ['myQuestions'] });
+      queryClient.invalidateQueries({ queryKey: ['categories'] });
+      return true;
+    },
+  });
+  const getCategoriesMutation = useQuery<[string]>({
+    queryKey: ['categories'],
+    queryFn: questionsApi.getCategories,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    refetchOnWindowFocus: false,
+    retry: false,
   });
 
   return {
@@ -93,6 +111,8 @@ export function useQuestions({ searchQuery, selectedCategories, sortBy }: Partia
     downvoteMutation,
     bookmarkMutation,
     addQuestionMutation,
-    viewQuestionMutation
+    viewQuestionMutation,
+    getCategoriesMutation,
+    editQuestionMutation
   };
 }

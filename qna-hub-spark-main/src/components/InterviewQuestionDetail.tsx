@@ -7,8 +7,6 @@ import { Badge } from './ui/badge';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import ReactMarkdown from 'react-markdown'
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { questionsApi } from '@/lib/api';
 import AddInterviewQuestionDialog from './AddInterviewQuestionDialog';
 import { useEffect, useState } from 'react';
 import { cn } from '../lib/utils';
@@ -57,17 +55,16 @@ export function InterviewQuestionDetail({
   onBack,
   userId
 }: Readonly<InterviewQuestionDetailProps>) {
-  const queryClient = useQueryClient();
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editInitialValues, setEditInitialValues] = useState(null as null | Omit<InterviewQuestion, 'id' | 'author' | 'timestamp' | 'votes' | 'bookmarked' | 'views'>);
-  const { viewQuestionMutation } = useQuestions({})
+  const { viewQuestionMutation, editQuestionMutation } = useQuestions({})
   const formatTimeAgo = (date: Date) => {
     const now = new Date();
     const diffInHours = Math.floor((now.getTime() - new Date(date).getTime()) / (1000 * 60 * 60));
 
-    if (diffInHours < 1) return 'just now';
-    if (diffInHours < 24) return `${diffInHours}h ago`;
-    if (diffInHours < 168) return `${Math.floor(diffInHours / 24)}d ago`;
+    if (diffInHours < 1) { return 'just now'; }
+    if (diffInHours < 24) { return `${diffInHours}h ago`; }
+    if (diffInHours < 168) { return `${Math.floor(diffInHours / 24)}d ago`; }
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
@@ -84,14 +81,7 @@ export function InterviewQuestionDetail({
     setEditInitialValues(question);
   };
 
-  const editQuestionMutation = useMutation({
-    mutationFn: (data: { _id: string } & Omit<InterviewQuestion, 'id' | 'author' | 'timestamp' | 'votes' | 'bookmarked' | 'views'>) => questionsApi.editQuestion(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['questions'] });
-      queryClient.invalidateQueries({ queryKey: ['myQuestions'] });
-      return true;
-    },
-  });
+  // const {editQuestionMutation} = useQuestions({})
 
   const getDifficultyConfig = (difficulty: string) => {
     const config = {
@@ -141,14 +131,14 @@ export function InterviewQuestionDetail({
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30 dark:from-gray-900 dark:to-blue-950/20">
       <div className="container mx-auto px-4 py-8 max-sm:px-1 ">
         {/* Header Navigation */}
-        <div className="mb-8 flex items-center justify-between">
+        <div className="mb-8 flex items-center justify-between flex-wrap gap-1">
           <Button
             variant="ghost"
             onClick={onBack}
             className="group hover:bg-white/80 dark:hover:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700 transition-all duration-200 hover:scale-105"
           >
             <ArrowLeft className="h-4 w-4 mr-2 group-hover:-translate-x-1 transition-transform" />
-            Back to Questions
+            <span className='max-sm:hidden'>Back to Questions</span>
           </Button>
 
           <div className="flex items-center gap-3">
@@ -373,6 +363,9 @@ export function InterviewQuestionDetail({
           }}
         />
       )}
+      <button className='fixed bottom-4 left-4 bg-gray-100 border  w-8 h-8 rounded-full flex items-center justify-center  hover:opacity-100 transition-opacity cursor-pointer hover:scale-110 transition-all duration-200' onClick={onBack}>
+        <ArrowLeft className='h-4 w-4 text-gray-600 dark:text-gray-400 ' />
+      </button>
     </div>
   );
 }

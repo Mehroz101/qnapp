@@ -4,6 +4,9 @@ import Modal from './ui/Modal';
 import { Building2, Code, Target, Star, Send, X, Plus } from 'lucide-react';
 import { Button } from './ui/button';
 import { cn } from '../lib/utils';
+import { Select } from './ui/select';
+import CustomSelect, { OptionType } from './customSelect';
+import { useQuestions } from '@/hooks/useQuestions';
 
 interface AddInterviewQuestionDialogProps {
   onAddQuestion: (
@@ -42,13 +45,14 @@ export default function AddInterviewQuestionDialog({
   const [question, setQuestion] = useState(initialValues?.question || '');
   const [answer, setAnswer] = useState(initialValues?.answer || '');
   const [company, setCompany] = useState(initialValues?.company || '');
+  const [selected, setSelected] = useState<{ value: string; label: string } | null>(null);
+  const [options, setOptions] = useState<{ value: string; label: string }[]>([]);
   const [interviewType, setInterviewType] = useState<
     'technical' | 'behavioral' | 'system-design' | 'coding' | 'case-study'
   >(initialValues?.interviewType || 'technical');
-  const [category, setCategory] = useState(initialValues?.category || '');
   const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>(initialValues?.difficulty || 'medium');
 
-  
+  const { getCategoriesMutation } = useQuestions({});
   // Reset form when initialValues or open changes
   useEffect(() => {
     if (open) {
@@ -56,14 +60,23 @@ export default function AddInterviewQuestionDialog({
       setAnswer(initialValues?.answer || '');
       setCompany(initialValues?.company || '');
       setInterviewType(initialValues?.interviewType || 'technical');
-      setCategory(initialValues?.category || '');
       setDifficulty(initialValues?.difficulty || 'medium');
     }
-  }, [open, initialValues]);
+  }, [open, initialValues, getCategoriesMutation.data]);
+  useEffect(() => {
+    if (getCategoriesMutation.data) {
+      const option = getCategoriesMutation.data?.map((category: string) => ({ value: category, label: category }));
+      const selectedOption = initialValues?.category ? option.find((cat) => cat.value === initialValues.category) : null;
+      console.log('Options fetched:', option);
+      console.log('Selected option:', selectedOption);
+      setOptions(option);
+      setSelected(selectedOption);
+    }
+  }, [getCategoriesMutation.data, initialValues?.category]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!question.trim() || !answer.trim() || !company.trim() || !category.trim()) {
+    if (!question.trim() || !answer.trim() || !company.trim() || selected === null) {
       return;
     }
 
@@ -73,7 +86,7 @@ export default function AddInterviewQuestionDialog({
       answer: answer.trim(),
       company: company.trim(),
       interviewType,
-      category: category.trim(),
+      category: selected?.value || '',
       difficulty,
     });
 
@@ -82,13 +95,26 @@ export default function AddInterviewQuestionDialog({
       setAnswer('');
       setCompany('');
       setInterviewType('technical');
-      setCategory('');
+      setSelected(null);
       setDifficulty('medium');
       setOpen(false);
     }
   };
-
+  const colourOptions = [
+    { value: 'red', label: 'Red' },
+    { value: 'blue', label: 'Blue' },
+    { value: 'green', label: 'Green' },
+    { value: 'yellow', label: 'Yellow' },
+    { value: 'orange', label: 'Orange' },
+    { value: 'purple', label: 'Purple' },
+  ]
   const isEditing = !!initialValues?._id;
+  const filterColors = (inputValue: string) => {
+    return colourOptions.filter((i) =>
+      i.label.toLowerCase().includes(inputValue.toLowerCase())
+    );
+  };
+
 
   return (
     <>
@@ -147,14 +173,23 @@ export default function AddInterviewQuestionDialog({
                 <Code className="h-4 w-4 text-purple-600" />
                 Category *
               </label>
-              <input
+              <div style={{ width: 300 }}>
+                <CustomSelect
+                  options={options ?? []}
+                  placeholder="Pick or create a color..."
+                  value={selected}
+                  onChange={setSelected}
+                  isClearable
+                />
+              </div>
+              {/* <input
                 type="text"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 className="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-3 text-gray-900 dark:text-white focus:border-purple-500 focus:ring-2 focus:ring-purple-200 dark:focus:ring-purple-800 focus:outline-none transition-all duration-200"
                 placeholder="e.g., React, System Design, Algorithms"
                 required
-              />
+              /> */}
             </div>
           </div>
 
@@ -268,7 +303,7 @@ export default function AddInterviewQuestionDialog({
             <Button
               type="submit"
               className="rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-2.5 text-white shadow-lg hover:from-blue-700 hover:to-purple-700 hover:shadow-xl transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={!question.trim() || !answer.trim() || !company.trim() || !category.trim()}
+              disabled={!question.trim() || !answer.trim() || !company.trim() || selected === null}
             >
               <Send className="h-4 w-4 mr-2" />
               {isEditing ? 'Update Question' : 'Share Experience'}

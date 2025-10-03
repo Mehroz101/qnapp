@@ -7,6 +7,7 @@ const router = Router();
 
 router.post('/', authRequired, qnaController.createQuestion);
 router.get('/', authOptional, qnaController.listQuestions);
+router.get('/categories', qnaController.getCategories);
 router.get('/:id', authOptional, qnaController.getQuestionDetail);
 router.put('/:id', authRequired, qnaController.updateQuestion);
 router.delete('/:id', authRequired, qnaController.deleteQuestion);

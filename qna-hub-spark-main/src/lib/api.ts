@@ -57,4 +57,7 @@ export const questionsApi = {
   async viewQuestion(id: string) {
     return (await axiosClient.post(`/qna/view`, { questionId: id })).data;
   },
+  async getCategories() {
+    return (await axiosClient.get('/qna/categories')).data;
+  }
 };

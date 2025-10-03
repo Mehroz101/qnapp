@@ -170,6 +170,11 @@ export const qnaService = {
     }
 
 
-  }
+  },
+  async getCategories() {
+    const categories = await (Question as any).find().distinct('category');
+    console.log('Categories fetched:', categories);
+    return categories;
+  },
 
 }

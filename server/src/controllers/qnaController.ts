@@ -110,6 +110,10 @@ export const qnaController = {
     if (!question) return res.status(404).json({ error: 'Not found' });
     res.json(question);
   },
+  async getCategories(req: Request, res: Response) {
+    const categories = await qnaService.getCategories();
+    res.json(categories);
+  },
   async generateWithAI(req: Request, res: Response) {
     const userId = (req as any).auth.userId;
     console.log("prompt received:", req.body.prompt);

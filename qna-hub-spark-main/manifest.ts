@@ -1,5 +1,4 @@
 export const manifestForPlugIn = {
-
   name: "Qwizzy",
   short_name: "Qwizzy",
   description: "this is a community for developer to ask question and get answer",
