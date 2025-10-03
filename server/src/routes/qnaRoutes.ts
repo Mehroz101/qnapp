@@ -5,8 +5,8 @@ import { qnaController } from '../controllers/qnaController.js';
 
 const router = Router();
 
-router.post('/', authRequired, qnaController.createQuestion);
 router.get('/', authOptional, qnaController.listQuestions);
+router.post('/', authRequired, qnaController.createQuestion);
 router.get('/categories', qnaController.getCategories);
 router.get('/:id', authOptional, qnaController.getQuestionDetail);
 router.put('/:id', authRequired, qnaController.updateQuestion);

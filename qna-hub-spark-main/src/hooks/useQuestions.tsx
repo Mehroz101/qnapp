@@ -19,6 +19,7 @@ export function useQuestions({ searchQuery, selectedCategories, sortBy }: Partia
     queryFn: userApi.getMyQuestions,
     staleTime: 1000 * 60, // 1 minute
     refetchOnWindowFocus: false,
+    retry: false,
   });
   const {
     data: allQuestions = [],
@@ -33,7 +34,7 @@ export function useQuestions({ searchQuery, selectedCategories, sortBy }: Partia
       sortBy,
     }),
     staleTime: 1000 * 60, // 1 min cache
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
     refetchInterval: 1000 * 30, // optional: auto-refresh every 30s
     retry: false,
   });
