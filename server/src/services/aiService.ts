@@ -66,7 +66,7 @@ Return ONLY valid JSON with this structure:\n\n\
 STRICT RULES:\n\
 - Do NOT explain or restate the question in the answer.\n\
 - The \"answer\" must be concise, 10–12 lines maximum.\n\
-- Use proper Markdown formatting:\n\
+- Use proper Markdown formatting only for answer not for question:\n\
   * Use **bold** and lists (-, *) for clarity.\n\
   * Use code blocks with exact syntax:\n\
     - Wrap code with three backticks (```).\n\
