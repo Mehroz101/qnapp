@@ -17,8 +17,10 @@ export function QuestionCard({ question, onVote, onBookmark, onClick }: Readonly
   const formatTimeAgo = (date: Date) => {
     const now = new Date();
     const diffInHours = Math.floor((now.getTime() - new Date(date).getTime()) / (1000 * 60 * 60));
-
-    if (diffInHours < 1) return 'just now';
+    if (diffInHours < 1){
+      console.log(diffInHours)
+      console.log(now.getTime() - new Date(date).getTime(), "diff", 1000 * 60 * 60)
+      return 'just now'};
     if (diffInHours < 24) return `${diffInHours}h ago`;
     if (diffInHours < 168) return `${Math.floor(diffInHours / 24)}d ago`;
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });

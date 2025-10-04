@@ -31,8 +31,8 @@ export const userApi = {
 };
 
 export const questionsApi = {
-  async list(params?: { search?: string; categories?: string[]; sortBy?: string }) {
-    // params: search, categories, sortBy
+  async list(params?: { search?: string; categories?: string[]; sortBy?: string, limit: number, cursor?: string | null}) {
+   
     return (await axiosClient.get('/qna', { params })).data;
   },
   async addQuestion(data: Partial<InterviewQuestion>) {

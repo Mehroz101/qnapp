@@ -40,8 +40,14 @@ export default function AddInterviewQuestionDialog({
   open: controlledOpen,
   setOpen: setControlledOpen,
 }: Readonly<AddInterviewQuestionDialogProps>) {
-  // Support both controlled and uncontrolled open state
-  const [open, setOpen] = typeof controlledOpen === 'boolean' && setControlledOpen ? [controlledOpen, setControlledOpen] : useState(false);
+  // Always call useState unconditionally
+  const [open, setOpen] = useState(false);
+  // If controlled props are provided, sync open state
+  useEffect(() => {
+    if (typeof controlledOpen === 'boolean' && setControlledOpen) {
+      setOpen(controlledOpen);
+    }
+  }, [controlledOpen, setControlledOpen]);
   const [question, setQuestion] = useState(initialValues?.question || '');
   const [answer, setAnswer] = useState(initialValues?.answer || '');
   const [company, setCompany] = useState(initialValues?.company || '');
@@ -52,7 +58,7 @@ export default function AddInterviewQuestionDialog({
   >(initialValues?.interviewType || 'technical');
   const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>(initialValues?.difficulty || 'medium');
 
-  const { getCategoriesMutation } = useQuestions({});
+  const { getCategories } = useQuestions({});
   // Reset form when initialValues or open changes
   useEffect(() => {
     if (open) {
@@ -62,17 +68,17 @@ export default function AddInterviewQuestionDialog({
       setInterviewType(initialValues?.interviewType || 'technical');
       setDifficulty(initialValues?.difficulty || 'medium');
     }
-  }, [open, initialValues, getCategoriesMutation.data]);
+  }, [open, initialValues, getCategories]);
   useEffect(() => {
-    if (getCategoriesMutation.data) {
-      const option = getCategoriesMutation.data?.map((category: string) => ({ value: category, label: category }));
+    if (getCategories) {
+      const option = getCategories?.map((category: string) => ({ value: category, label: category }));
       const selectedOption = initialValues?.category ? option.find((cat) => cat.value === initialValues.category) : null;
       console.log('Options fetched:', option);
       console.log('Selected option:', selectedOption);
       setOptions(option);
       setSelected(selectedOption);
     }
-  }, [getCategoriesMutation.data, initialValues?.category]);
+  }, [getCategories, initialValues?.category]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

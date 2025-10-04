@@ -21,16 +21,25 @@ export const qnaController = {
     res.status(201).json(q);
   },
 
-  async listQuestions(req: Request, res: Response) {
+ async listQuestions(req: Request, res: Response) {
+  try {
     const userId = (req as any).auth?.userId;
-    if (userId) {
-      const list = await qnaService.listQuestions(userId);
-      res.json(list);
-      return;
-    }
-    const list = await qnaService.listQuestions();
+    console.log("Query:", req.query);
+
+    const list = userId
+      ? await qnaService.listQuestions(userId, req.query)
+      : await qnaService.listQuestions(undefined, req.query);
+
     res.json(list);
-  },
+  } catch (err: any) {
+    console.error("Error in listQuestions:", err);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch questions",
+    });
+  }
+},
+
 
   async getQuestionDetail(req: Request, res: Response) {
     const q = await qnaService.getQuestionDetail(req.params.id ?? '');

@@ -1,29 +1,41 @@
-import { ArrowUp, ArrowDown, Bookmark, Eye, Building2, Clock, ArrowLeft, Edit, Share, MessageSquare, User } from 'lucide-react';
-import { InterviewQuestion } from '../types';
-import { categoryColors } from '../data/interviewQuestions';
-import { Button } from './ui/button';
-import { Card } from './ui/card';
-import { Badge } from './ui/badge';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
-import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
-import ReactMarkdown from 'react-markdown'
-import AddInterviewQuestionDialog from './AddInterviewQuestionDialog';
-import { useEffect, useState } from 'react';
-import { cn } from '../lib/utils';
-import { useQuestions } from '@/hooks/useQuestions';
+import {
+  ArrowUp,
+  ArrowDown,
+  Bookmark,
+  Eye,
+  Building2,
+  Clock,
+  ArrowLeft,
+  Edit,
+  Share,
+  MessageSquare,
+  User,
+} from "lucide-react";
+import { InterviewQuestion } from "../types";
+import { categoryColors } from "../data/interviewQuestions";
+import { Button } from "./ui/button";
+import { Card } from "./ui/card";
+import { Badge } from "./ui/badge";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import ReactMarkdown from "react-markdown";
+import AddInterviewQuestionDialog from "./AddInterviewQuestionDialog";
+import { useEffect, useState } from "react";
+import { cn } from "../lib/utils";
+import { useQuestions } from "@/hooks/useQuestions";
 
 interface InterviewQuestionDetailProps {
   question: InterviewQuestion;
-  onVote: (questionId: string, direction: 'up' | 'down') => void;
+  onVote: (questionId: string, direction: "up" | "down") => void;
   onBookmark: (questionId: string) => void;
   onBack: () => void;
   userId: string | undefined;
 }
 
 type Props = {
-  language: string
-  value: string
-}
+  language: string;
+  value: string;
+};
 
 const CodeBlock: React.FC<Props> = ({ language, value }) => (
   <SyntaxHighlighter
@@ -32,43 +44,56 @@ const CodeBlock: React.FC<Props> = ({ language, value }) => (
     showLineNumbers
     wrapLines
     customStyle={{
-      borderRadius: '12px',
-      padding: '1.5rem',
-      fontSize: '0.9rem',
-      background: '#1a1a1a',
-      border: '1px solid #2d2d2d',
-      margin: '1rem 0'
+      borderRadius: "12px",
+      padding: "1.5rem",
+      fontSize: "0.9rem",
+      background: "#1a1a1a",
+      border: "1px solid #2d2d2d",
+      margin: "1rem 0",
     }}
     lineNumberStyle={{
-      color: '#6b7280',
-      minWidth: '3em'
+      color: "#6b7280",
+      minWidth: "3em",
     }}
   >
     {value.trim()}
   </SyntaxHighlighter>
-)
+);
 
 export function InterviewQuestionDetail({
   question,
   onVote,
   onBookmark,
   onBack,
-  userId
+  userId,
 }: Readonly<InterviewQuestionDetailProps>) {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [editInitialValues, setEditInitialValues] = useState(null as null | Omit<InterviewQuestion, 'id' | 'author' | 'timestamp' | 'votes' | 'bookmarked' | 'views'>);
-  const { viewQuestionMutation, editQuestionMutation } = useQuestions({})
+  const [editInitialValues, setEditInitialValues] = useState(
+    null as null | Omit<
+      InterviewQuestion,
+      "id" | "author" | "timestamp" | "votes" | "bookmarked" | "views"
+    >
+  );
+  const { viewQuestionMutation, editQuestionMutation } = useQuestions({});
   const formatTimeAgo = (date: Date) => {
     const now = new Date();
-    const diffInHours = Math.floor((now.getTime() - new Date(date).getTime()) / (1000 * 60 * 60));
+    const diffInHours = Math.floor(
+      (now.getTime() - new Date(date).getTime()) / (1000 * 60 * 60)
+    );
 
-    if (diffInHours < 1) { return 'just now'; }
-    if (diffInHours < 24) { return `${diffInHours}h ago`; }
-    if (diffInHours < 168) { return `${Math.floor(diffInHours / 24)}d ago`; }
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+    if (diffInHours < 1) {
+      return "just now";
+    }
+    if (diffInHours < 24) {
+      return `${diffInHours}h ago`;
+    }
+    if (diffInHours < 168) {
+      return `${Math.floor(diffInHours / 24)}d ago`;
+    }
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
   useEffect(() => {
@@ -86,26 +111,38 @@ export function InterviewQuestionDetail({
   const getDifficultyConfig = (difficulty: string) => {
     const config = {
       easy: {
-        class: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/20 dark:text-emerald-400 dark:border-emerald-800',
-        label: 'Easy'
+        class:
+          "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/20 dark:text-emerald-400 dark:border-emerald-800",
+        label: "Easy",
       },
       medium: {
-        class: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/20 dark:text-amber-400 dark:border-amber-800',
-        label: 'Medium'
+        class:
+          "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/20 dark:text-amber-400 dark:border-amber-800",
+        label: "Medium",
       },
       hard: {
-        class: 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/20 dark:text-rose-400 dark:border-rose-800',
-        label: 'Hard'
-      }
+        class:
+          "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/20 dark:text-rose-400 dark:border-rose-800",
+        label: "Hard",
+      },
     };
     return config[difficulty as keyof typeof config] || config.medium;
   };
 
   const getCategoryColor = (category: string) => {
-    return categoryColors[category] || 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300';
+    return (
+      categoryColors[category] ||
+      "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
+    );
   };
 
-  const handleAddOrEditQuestion = (data: Omit<InterviewQuestion, 'id' | 'author' | 'timestamp' | 'votes' | 'bookmarked' | 'views'> & { _id?: string }, questionId?: string) => {
+  const handleAddOrEditQuestion = (
+    data: Omit<
+      InterviewQuestion,
+      "id" | "author" | "timestamp" | "votes" | "bookmarked" | "views"
+    > & { _id?: string },
+    questionId?: string
+  ) => {
     editQuestionMutation.mutate({ ...data, _id: questionId });
   };
 
@@ -118,7 +155,7 @@ export function InterviewQuestionDetail({
           url: window.location.href,
         });
       } catch (error) {
-        console.log('Error sharing:', error);
+        console.log("Error sharing:", error);
       }
     } else {
       // Fallback: copy to clipboard
@@ -138,7 +175,7 @@ export function InterviewQuestionDetail({
             className="group hover:bg-white/80 dark:hover:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700 transition-all duration-200 hover:scale-105"
           >
             <ArrowLeft className="h-4 w-4 mr-2 group-hover:-translate-x-1 transition-transform" />
-            <span className='max-sm:hidden'>Back to Questions</span>
+            <span className="max-sm:hidden">Back to Questions</span>
           </Button>
 
           <div className="flex items-center gap-3">
@@ -165,7 +202,6 @@ export function InterviewQuestionDetail({
 
         <div className="max-w-4xl mx-auto">
           <Card className="p-8 border border-gray-200/80 dark:border-gray-700/80 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm shadow-xl hover:shadow-2xl transition-all duration-300 max-sm:p-2">
-
             {/* Header Section */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-6 border-b border-gray-100 dark:border-gray-800">
               <div className="flex items-center gap-4 flex-wrap">
@@ -190,7 +226,9 @@ export function InterviewQuestionDetail({
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50 px-3 py-1.5 rounded-lg">
                   <Clock className="h-4 w-4" />
-                  <span className="font-medium">{formatTimeAgo(question.timestamp)}</span>
+                  <span className="font-medium">
+                    {formatTimeAgo(question.timestamp)}
+                  </span>
                 </div>
 
                 <Button
@@ -251,10 +289,10 @@ export function InterviewQuestionDetail({
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => onVote(question._id, 'up')}
+                    onClick={() => onVote(question._id, "up")}
                     className={cn(
                       "h-8 w-8 p-0 transition-all duration-200 hover:scale-110",
-                      question.myVote === 'up'
+                      question.myVote === "up"
                         ? "bg-green-50 text-green-600 border border-green-200 dark:bg-green-950/40 dark:text-green-400 dark:border-green-800"
                         : "hover:bg-green-50 hover:text-green-600 dark:hover:bg-green-950/30"
                     )}
@@ -266,16 +304,18 @@ export function InterviewQuestionDetail({
                     <span className="font-bold text-lg text-gray-900 dark:text-white">
                       {question.votes}
                     </span>
-                    <span className="text-xs text-gray-500 dark:text-gray-400">votes</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      votes
+                    </span>
                   </div>
 
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => onVote(question._id, 'down')}
+                    onClick={() => onVote(question._id, "down")}
                     className={cn(
                       "h-8 w-8 p-0 transition-all duration-200 hover:scale-110",
-                      question.myVote === 'down'
+                      question.myVote === "down"
                         ? "bg-red-50 text-red-600 border border-red-200 dark:bg-red-950/40 dark:text-red-400 dark:border-red-800"
                         : "hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30"
                     )}
@@ -291,10 +331,13 @@ export function InterviewQuestionDetail({
                   <ReactMarkdown
                     components={{
                       code({ node, className, children, ...props }: any) {
-                        const match = /language-(\w+)/.exec(className || '')
+                        const match = /language-(\w+)/.exec(className || "");
                         const inline = props.inline;
                         return !inline && match ? (
-                          <CodeBlock language={match[1]} value={String(children)} />
+                          <CodeBlock
+                            language={match[1]}
+                            value={String(children)}
+                          />
                         ) : (
                           <code
                             className="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded-md text-sm font-mono"
@@ -302,16 +345,46 @@ export function InterviewQuestionDetail({
                           >
                             {children}
                           </code>
-                        )
+                        );
                       },
-                      p: ({ children }) => <p className="mb-4 text-gray-700 dark:text-gray-300 leading-relaxed">{children}</p>,
-                      h1: ({ children }) => <h1 className="text-2xl font-bold mt-6 mb-4 text-gray-900 dark:text-white">{children}</h1>,
-                      h2: ({ children }) => <h2 className="text-xl font-bold mt-5 mb-3 text-gray-900 dark:text-white">{children}</h2>,
-                      h3: ({ children }) => <h3 className="text-lg font-bold mt-4 mb-2 text-gray-900 dark:text-white">{children}</h3>,
-                      ul: ({ children }) => <ul className="list-disc list-inside mb-4 space-y-1 text-gray-700 dark:text-gray-300">{children}</ul>,
-                      ol: ({ children }) => <ol className="list-decimal list-inside mb-4 space-y-1 text-gray-700 dark:text-gray-300">{children}</ol>,
-                      li: ({ children }) => <li className="ml-4 mb-1">{children}</li>,
-                      strong: ({ children }) => <strong className="font-semibold text-gray-900 dark:text-white">{children}</strong>,
+                      p: ({ children }) => (
+                        <p className="mb-4 text-gray-700 dark:text-gray-300 leading-relaxed">
+                          {children}
+                        </p>
+                      ),
+                      h1: ({ children }) => (
+                        <h1 className="text-2xl font-bold mt-6 mb-4 text-gray-900 dark:text-white">
+                          {children}
+                        </h1>
+                      ),
+                      h2: ({ children }) => (
+                        <h2 className="text-xl font-bold mt-5 mb-3 text-gray-900 dark:text-white">
+                          {children}
+                        </h2>
+                      ),
+                      h3: ({ children }) => (
+                        <h3 className="text-lg font-bold mt-4 mb-2 text-gray-900 dark:text-white">
+                          {children}
+                        </h3>
+                      ),
+                      ul: ({ children }) => (
+                        <ul className="list-disc list-inside mb-4 space-y-1 text-gray-700 dark:text-gray-300">
+                          {children}
+                        </ul>
+                      ),
+                      ol: ({ children }) => (
+                        <ol className="list-decimal list-inside mb-4 space-y-1 text-gray-700 dark:text-gray-300">
+                          {children}
+                        </ol>
+                      ),
+                      li: ({ children }) => (
+                        <li className="ml-4 mb-1">{children}</li>
+                      ),
+                      strong: ({ children }) => (
+                        <strong className="font-semibold text-gray-900 dark:text-white">
+                          {children}
+                        </strong>
+                      ),
                     }}
                   >
                     {question.answer}
@@ -331,7 +404,13 @@ export function InterviewQuestionDetail({
 
                   <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                     <User className="h-4 w-4" />
-                    <span className="font-medium">shared by {question.author.username.replace(/[#*`]/g, '').substring(0, 20)}...</span>
+                    <span className="font-medium">
+                      shared by{" "}
+                      {question.author.username
+                        .replace(/[#*`]/g, "")
+                        .substring(0, 20)}
+                      ...
+                    </span>
                   </div>
                 </div>
 
@@ -363,8 +442,11 @@ export function InterviewQuestionDetail({
           }}
         />
       )}
-      <button className='fixed bottom-4 left-4 bg-gray-100 border  w-8 h-8 rounded-full flex items-center justify-center  hover:opacity-100 transition-opacity cursor-pointer hover:scale-110 transition-all duration-200' onClick={onBack}>
-        <ArrowLeft className='h-4 w-4 text-gray-600 dark:text-gray-400 ' />
+      <button
+        className="fixed bottom-4 left-4 bg-gray-100 border  w-8 h-8 rounded-full flex items-center justify-center  hover:opacity-100  cursor-pointer hover:scale-110 transition-all duration-200"
+        onClick={onBack}
+      >
+        <ArrowLeft className="h-4 w-4 text-gray-600 dark:text-gray-400 " />
       </button>
     </div>
   );
